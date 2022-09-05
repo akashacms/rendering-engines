@@ -1,0 +1,30 @@
+{
+  "name": "renderers",
+  "version": "0.9.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.7.13",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "@asciidoctor/core": "^2.2.6",
+    "ejs": "^3.1.8",
+    "fastq": "^1.13.0",
+    "gray-matter": "^4.0.3",
+    "handlebars": "^4.7.7",
+    "less": "^4.1.3",
+    "liquid": "^5.1.1",
+    "mahabhuta": "^0.8.3",
+    "markdown-it": "^13.0.1",
+    "nunjucks": "^3.2.3",
+    "runtime-data-validation": "^0.2.2"
+  }
+}
