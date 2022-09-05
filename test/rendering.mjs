@@ -168,4 +168,29 @@ describe('LESS', function() {
 
 describe('JSON', function() {
 
+    // The JSON rendering engine is a little different than the others.
+    // There is a partial template path passed in the frontmatter of
+    // the document file.  This partial will be given JS/JSON data
+    // in the `data` metadata object.
+
+    it('should render JSON partial json-format.html.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('json-format.html.ejs', {
+                data: {
+                    "Row1": "value 1",
+                    "Row2": "value 2",
+                    "Row3": "value 3"
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /Row1 :- value 1/);
+        assert.match(rendered, /Row2 :- value 2/);
+        assert.match(rendered, /Row3 :- value 3/);
+    });
 });
