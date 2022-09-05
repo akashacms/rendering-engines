@@ -28,9 +28,45 @@ async function doRender(fn, metadata) {
     });
 }
 
+describe('Markdown', function() {
+
+    it('should render Markdown markdown-test.html.md', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('markdown-test.html.md', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*code class="language-bash".echo &\quot;hello, \${WORLD}\&quot;/);
+        assert.match(rendered, /.*.code.how are you.*/)
+    });
+
+});
+
+describe('AsciiDoctor', function() {
+
+    it('should render AsciiDoctor asciidoctor-test.html.adoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('asciidoctor-test.html.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*\<p\>Preamble paragraph.\<\/p\>/);
+        assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
+    });
+
+});
+
 describe('EJS', function() {
 
-    it('should render EJS doc1.ejs', async function() {
+    it('should render EJS doc1.html.ejs', async function() {
         let rendered;
         try {
             rendered = await doRender('doc1.html.ejs', {
@@ -42,6 +78,27 @@ describe('EJS', function() {
         }
         assert.ok(rendered);
         assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
     });
+
+});
+
+describe('Liquid', function() {
+
+});
+
+describe('Nunjucks', function() {
+
+});
+
+describe('Handlebars', function() {
+
+});
+
+describe('LESS', function() {
+
+});
+
+describe('JSON', function() {
 
 });
