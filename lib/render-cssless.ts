@@ -20,7 +20,7 @@
 import { Renderer } from './Renderer.js';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import * as less from 'less';
+import { default as less } from 'less';
 
 type lessOutput = {
     css: string;   // compiled CSS

@@ -85,17 +85,84 @@ describe('EJS', function() {
 
 describe('Liquid', function() {
 
+    it('should render Liquid doc1.html.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.html.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
 });
 
 describe('Nunjucks', function() {
+
+    it('should render Nunjucks doc1.html.njk', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.html.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
 
 });
 
 describe('Handlebars', function() {
 
+    it('should render Handlebars doc1.html.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.html.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
 });
 
 describe('LESS', function() {
+
+    it('should render LESS style.css.less', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('style.css.less', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.ok(rendered.css);
+        // console.log(rendered);
+        assert.match(rendered.css, /width: 10px;/);
+        assert.match(rendered.css, /height: 20px;/);
+        assert.match(rendered.css, /border-top: dotted 1px black;/);
+        assert.match(rendered.css, /border-bottom: solid 2px black;/);
+        assert.match(rendered.css, /#header .navigation/);
+        assert.match(rendered.css, /#header .logo/);
+        assert.ok(rendered.imports);
+        assert.ok(Array.isArray(rendered.imports));
+        assert.equal(rendered.imports.length, 0);
+    });
 
 });
 

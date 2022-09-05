@@ -36,11 +36,12 @@ export class NunjucksRenderer extends HTMLRenderer {
         this[_nunjuck_env] = undefined;
     }
 
-    njkenv(config) {
+    njkenv() {
         if (this[_nunjuck_env]) return this[_nunjuck_env];
         // console.log(`njkenv layoutDirs ${util.inspect(config.layoutDirs)}`);
         // Detect if config is not set
-        if (!config) throw new Error(`render-nunjucks no config`);
+        // In the Rendering module, config is stored in superclass
+        // if (!config) throw new Error(`render-nunjucks no config`);
 
         // Get the paths for both the Layouts and Partials directories,
         // because with Nunjucks we are storing macros files in some
@@ -70,7 +71,7 @@ export class NunjucksRenderer extends HTMLRenderer {
 
     async render(context: RenderingContext /* text, metadata, docInfo */) {
         try {
-            let env = this.njkenv(context.metadata.config);
+            let env = this.njkenv();
             return env.renderString(context.content, context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
@@ -84,11 +85,7 @@ export class NunjucksRenderer extends HTMLRenderer {
 
     renderSync(context: RenderingContext /* text, metadata, docInfo */) {
         try {
-            if (!context.metadata.config) {
-                // This condition can cause a problem in this.njkenv
-                throw new Error(`render-nunjucks renderSync no config`);
-            }
-            let env = this.njkenv(context.metadata.config);
+            let env = this.njkenv();
             return env.renderString(context.content, context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
