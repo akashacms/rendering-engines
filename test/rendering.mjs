@@ -4,6 +4,7 @@ import * as assert from 'node:assert';
 import * as path from 'node:path';
 import * as url from 'url';
 import { promises as fsp } from 'fs';
+import * as fs from 'fs';
 
 
 const __filename = url.fileURLToPath(import.meta.url);
@@ -28,12 +29,37 @@ async function doRender(fn, metadata) {
     });
 }
 
+function doRenderSync(fn, metadata) {
+    const docfn = path.join('documents', fn);
+    const doc = fs.readFileSync(docfn, 'utf-8');
+    const renderer = config.findRendererPath(fn);
+    return renderer.renderSync({
+        fspath: docfn,
+        content: doc,
+        metadata: metadata
+    });
+}
+
 describe('Markdown', function() {
 
     it('should render Markdown markdown-test.html.md', async function() {
         let rendered;
         try {
             rendered = await doRender('markdown-test.html.md', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*code class="language-bash".echo &\quot;hello, \${WORLD}\&quot;/);
+        assert.match(rendered, /.*.code.how are you.*/)
+    });
+
+    it('should render Sync Markdown markdown-test.html.md', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('markdown-test.html.md', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -62,6 +88,20 @@ describe('AsciiDoctor', function() {
         assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
     });
 
+    it('should render Sync AsciiDoctor asciidoctor-test.html.adoc', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('asciidoctor-test.html.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*\<p\>Preamble paragraph.\<\/p\>/);
+        assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
+    });
+
 });
 
 describe('EJS', function() {
@@ -70,6 +110,21 @@ describe('EJS', function() {
         let rendered;
         try {
             rendered = await doRender('doc1.html.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should render Sync EJS doc1.html.ejs', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.html.ejs', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -100,6 +155,22 @@ describe('Liquid', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
+    it('should FAIL TO render Sync Liquid doc1.html.liquid', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = doRenderSync('doc1.html.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            // console.error(e);
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError);
+    });
+
 });
 
 describe('Nunjucks', function() {
@@ -119,6 +190,21 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
+    it('should render Sync Nunjucks doc1.html.njk', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.html.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
 });
 
 describe('Handlebars', function() {
@@ -127,6 +213,21 @@ describe('Handlebars', function() {
         let rendered;
         try {
             rendered = await doRender('doc1.html.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should render Sync Handlebars doc1.html.handlebars', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.html.handlebars', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -164,6 +265,19 @@ describe('LESS', function() {
         assert.equal(rendered.imports.length, 0);
     });
 
+    it('should FAIL TO render Sync LESS style.css.less', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = doRenderSync('style.css.less', { });
+        } catch (e) {
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError === true);
+    });
+
 });
 
 describe('JSON', function() {
@@ -177,6 +291,27 @@ describe('JSON', function() {
         let rendered;
         try {
             rendered = await config.partial('json-format.html.ejs', {
+                data: {
+                    "Row1": "value 1",
+                    "Row2": "value 2",
+                    "Row3": "value 3"
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /Row1 :- value 1/);
+        assert.match(rendered, /Row2 :- value 2/);
+        assert.match(rendered, /Row3 :- value 3/);
+    });
+
+    it('should render Sync JSON partial json-format.html.ejs', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('json-format.html.ejs', {
                 data: {
                     "Row1": "value 1",
                     "Row2": "value 2",

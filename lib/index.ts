@@ -489,14 +489,14 @@ async function defaultPartial(fname: string, metadata: any) {
 }
 
 
-function defaultPartialSync(config: Configuration, fname: string, metadata: any) {
+function defaultPartialSync(fname: string, metadata: any) {
     
-    const found = config.findPartialSync(fname);
+    const found = this.findPartialSync(fname);
     if (!found) {
         throw new Error(`No partial found for ${fname} in ${util.inspect(this.partialDirs)}`);
     }
 
-    const renderer = config.findRendererPath(fname);
+    const renderer = this.findRendererPath(fname);
     if (!renderer) {
         if (fname.endsWith('.html') || fname.endsWith('.xhtml')) {
             return fsp.readFile(found, 'utf-8');
@@ -521,7 +521,7 @@ function defaultPartialSync(config: Configuration, fname: string, metadata: any)
         mdata['partialSync'] = this.partialSync.bind(this);
         mdata['partial']     = this.partial.bind(this);
 
-        return renderer.render(<RenderingContext>{
+        return renderer.renderSync(<RenderingContext>{
             content: pContent,
             metadata: mdata,
             fspath: found
