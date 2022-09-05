@@ -34,6 +34,20 @@ describe('EJS', function() {
         assert.ok(rendered);
         assert.match(rendered, /.*Partial Body Text.*/);
     });
+
+    it('should render Sync EJS partial-body.html.ejs', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('partial-body.html.ejs', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
 });
 
 describe('Liquid', function() {
@@ -50,6 +64,21 @@ describe('Liquid', function() {
         }
         assert.ok(rendered);
         assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
+    it('should FAIL TO render Sync Liquid partial-body.html.liquid', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = config.partialSync('partial-body.html.liquid', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError === true);
     });
 });
 
@@ -68,6 +97,20 @@ describe('Nunjucks', function() {
         assert.ok(rendered);
         assert.match(rendered, /.*Partial Body Text.*/);
     });
+
+    it('should render Sync Nunjucks partial-body.html.njk', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('partial-body.html.njk', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
 });
 
 describe('Handlebars', function() {
@@ -76,6 +119,20 @@ describe('Handlebars', function() {
         let rendered;
         try {
             rendered = await config.partial('partial-body.html.handlebars', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
+    it('should render Sync Handlebars partial-body.html.handlebars', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('partial-body.html.handlebars', {
                 partialBody: 'Partial Body Text'
             });
         } catch (e) {
