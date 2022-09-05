@@ -21,6 +21,8 @@ const config = new Configuration({
     layoutDirs:  [ path.join(__dirname, 'layouts1') ]
 });
 
+describe('Partials', function() {
+
 describe('EJS', function() {
 
     it('should render EJS partial-body.html.ejs', async function() {
@@ -233,4 +235,6 @@ describe('Handlebars', function() {
     // It does support partials, but they have to be preregistered,
     // and it does not support searching for partials in the filesystem.
     // Hence we will not test "include" with Handlebars
+});
+
 });

@@ -40,6 +40,8 @@ function doRenderSync(fn, metadata) {
     });
 }
 
+describe('Rendering', function() {
+
 describe('Markdown', function() {
 
     it('should render Markdown markdown-test.html.md', async function() {
@@ -328,4 +330,6 @@ describe('JSON', function() {
         assert.match(rendered, /Row2 :- value 2/);
         assert.match(rendered, /Row3 :- value 3/);
     });
+});
+
 });
