@@ -58,11 +58,11 @@ export class HTMLRenderer extends Renderer {
         return data;
     }
 
-    async readDocument(fnDoc) {
+    /* async readDocument(fnDoc) {
         const docLayout = await fsp.readFile(fnDoc, 'utf8');
         const fm = matter(docLayout);
         return fm;
-    }
+    } */
 
     // renderForLayout && renderDocument needs to be in AkashaRender render.js
     // Rewrite to simplify the flow

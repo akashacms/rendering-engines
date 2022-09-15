@@ -321,7 +321,7 @@ function IsString() {
         `Value :value: is not a string`);
 }
 
-function isObject(s: string) {
+function isObject(s: any) {
     if (!s) return false;
     if (!(typeof s === 'object')) return false;
     return true;
