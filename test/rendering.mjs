@@ -22,22 +22,29 @@ async function doRender(fn, metadata) {
     const docfn = path.join('documents', fn);
     const doc = await fsp.readFile(docfn, 'utf-8');
     const renderer = config.findRendererPath(fn);
-    return await renderer.render({
+    const rc = renderer.parseMetadata({
         fspath: docfn,
         content: doc,
-        metadata: metadata
     });
+    if (!rc.metadata) rc.metadata = {};
+    for (const yprop in metadata) {
+        rc.metadata[yprop] = metadata[yprop];
+    }
+    return await renderer.render(rc);
 }
 
 function doRenderSync(fn, metadata) {
     const docfn = path.join('documents', fn);
     const doc = fs.readFileSync(docfn, 'utf-8');
     const renderer = config.findRendererPath(fn);
-    return renderer.renderSync({
+    const rc = renderer.parseMetadata({
         fspath: docfn,
         content: doc,
-        metadata: metadata
     });
+    for (const yprop in metadata) {
+        rc.metadata[yprop] = metadata[yprop];
+    }
+    return renderer.renderSync(rc);
 }
 
 function parseMetadata(fn) {
@@ -281,6 +288,44 @@ describe('EJS', function() {
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
+    it('should render EJS meta1.html.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for EJS<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
+    });
+
+    it('should render Sync EJS meta1.html.ejs', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.html.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for EJS<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
+    });
+
 });
 
 describe('Liquid', function() {
@@ -359,6 +404,41 @@ describe('Liquid', function() {
         assert.equal(rc.metadata.layout, 'foo.html.ejs');
         assert.match(rc.fspath, /meta1.html.liquid$/);
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
+    it('should render Liquid meta1.html.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for LiquidJS<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
+    });
+
+    it('should FAIL TO render Sync Liquid meta1.html.liquid', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = doRenderSync('meta1.html.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            // console.error(e);
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError);
     });
 
 });
@@ -440,6 +520,43 @@ describe('Nunjucks', function() {
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
+    it('should render Nunjucks meta1.html.njk', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Nunjucks<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
+    });
+
+    it('should render Sync Nunjucks meta1.html.njk', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.html.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Nunjucks<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
+    });
 
 });
 
@@ -518,6 +635,44 @@ describe('Handlebars', function() {
         assert.equal(rc.metadata.layout, 'foo.html.ejs');
         assert.match(rc.fspath, /meta1.html.handlebars$/);
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
+    it('should render Handlebars meta1.html.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Handlebars<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
+    });
+
+    it('should render Sync Handlebars meta1.html.handlebars', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.html.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Handlebars<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+
     });
 
 
