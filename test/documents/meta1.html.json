@@ -1,0 +1,9 @@
+---
+title: Metadata test for JSON
+layout: foo.html.ejs
+hello: world
+---
+{
+    "message": "This is the body.",
+    "hello": "World!"
+}

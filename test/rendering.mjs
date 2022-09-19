@@ -40,6 +40,16 @@ function doRenderSync(fn, metadata) {
     });
 }
 
+function parseMetadata(fn) {
+    const docfn = path.join('documents', fn);
+    const doc = fs.readFileSync(docfn, 'utf-8');
+    const renderer = config.findRendererPath(fn);
+    return renderer.parseMetadata({
+        fspath: docfn,
+        content: doc,
+    });
+}
+
 describe('Rendering', function() {
 
 describe('Markdown', function() {
@@ -105,6 +115,17 @@ describe('Markdown', function() {
         assert.equal(caughtError, true);
     });
 
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.md');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for Markdown');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.md$/);
+        assert.match(rc.body, /Hello, World!/);
+    });
 });
 
 describe('AsciiDoctor', function() {
@@ -170,7 +191,17 @@ describe('AsciiDoctor', function() {
         assert.equal(caughtError, true);
     });
 
-
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.adoc');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for AsciiDoctor');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.adoc$/);
+        assert.match(rc.body, /Hello, World!/);
+    });
 });
 
 describe('EJS', function() {
@@ -238,6 +269,17 @@ describe('EJS', function() {
         assert.equal(caughtError, true);
     });
 
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.ejs');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for EJS');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.ejs$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
 
 });
 
@@ -307,6 +349,17 @@ describe('Liquid', function() {
         assert.equal(caughtError, true);
     });
 
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.liquid');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for LiquidJS');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.liquid$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
 
 });
 
@@ -375,6 +428,18 @@ describe('Nunjucks', function() {
         assert.equal(caughtError, true);
     });
 
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.njk');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for Nunjucks');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.njk$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
 
 });
 
@@ -441,6 +506,18 @@ describe('Handlebars', function() {
 
         assert.equal(typeof format, 'undefined');
         assert.equal(caughtError, true);
+    });
+
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.handlebars');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for Handlebars');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.handlebars$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
 
@@ -516,6 +593,13 @@ describe('LESS', function() {
         assert.equal(caughtError, true);
     });
 
+    it('should NOT parse frontmatter', function() {
+        const rc = parseMetadata('style.css.less');
+        assert.ok(rc);
+        assert.equal(typeof rc.metadata, 'undefined');
+        assert.equal(typeof rc.body, 'undefined');
+        assert.ok(rc.content);
+    });
 
 });
 
@@ -599,6 +683,23 @@ describe('JSON', function() {
 
         assert.equal(typeof format, 'undefined');
         assert.equal(caughtError, true);
+    });
+
+    it('should parse frontmatter', function() {
+        const rc = parseMetadata('meta1.html.json');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for JSON');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.html.json$/);
+        assert.match(rc.body, /"hello": "World!"/);
+
+        const json = JSON.parse(rc.body);
+        assert.equal(json.message, 'This is the body.');
+        assert.equal(json.hello, 'World!');
+
     });
 
 
