@@ -16,11 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
-export declare class JSONRenderer extends HTMLRenderer {
+import { Renderer } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
+export declare class JSONRenderer extends Renderer {
     constructor();
     renderSync(context: RenderingContext): string;
     render(context: RenderingContext): Promise<string>;
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context
+     * @returns
+     */
+    parseMetadata(context: RenderingContext): RenderingContext;
+    renderFormat(context: RenderingContext): RenderingFormat;
 }
 //# sourceMappingURL=render-json.d.ts.map

@@ -18,17 +18,17 @@
  */
 
 import * as path from 'path';
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
+import { Renderer, parseFrontmatter } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
 
 import * as Handlebars from 'handlebars';
 
-export class HandlebarsRenderer extends HTMLRenderer {
+export class HandlebarsRenderer extends Renderer {
     constructor() {
         super(".html.handlebars", /^(.*\.html)\.(handlebars)$/);
     }
 
-    async render(context: RenderingContext /* text, metadata, docInfo */) {
+    async render(context: RenderingContext): Promise<string> {
         try {
             const template = Handlebars.compile(context.content);
             return template(context.metadata);
@@ -39,7 +39,7 @@ export class HandlebarsRenderer extends HTMLRenderer {
         }
     }
 
-    renderSync(context: RenderingContext /* text, metadata, docInfo */) {
+    renderSync(context: RenderingContext) {
         try {
             const template = Handlebars.compile(context.content);
             return template(context.metadata);
@@ -48,6 +48,24 @@ export class HandlebarsRenderer extends HTMLRenderer {
             var errstack = e.stack ? e.stack : e;
             throw new Error(`Error with Handlebars in file ${docpath} ${errstack}`);
         }
+    }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context 
+     * @returns 
+     */
+     parseMetadata(context: RenderingContext): RenderingContext {
+        return parseFrontmatter(context);
+    }
+
+    renderFormat(context: RenderingContext) {
+        if (!this.match(context.fspath)) {
+            throw new Error(`HandlebarsRenderer does not render files with this extension ${context.fspath}`);
+        }
+        return RenderingFormat.HTML;
     }
 
     /**

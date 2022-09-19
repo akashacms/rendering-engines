@@ -17,7 +17,6 @@
  *  limitations under the License.
  */
 import { Renderer } from './Renderer.js';
-import matter from 'gray-matter';
 /**
  * Rendering support for any file that produces HTML when rendered.
  */
@@ -28,7 +27,6 @@ export declare class HTMLRenderer extends Renderer {
      */
     maharun(rendered: any, metadata: any, mahafuncs: any): Promise<string>;
     copyMetadataProperties(data: any, frontmatter: any): any;
-    readDocument(fnDoc: any): Promise<matter.GrayMatterFile<string>>;
     /**
      * If the document metadata says to render into a template, do so.
      */

@@ -50,12 +50,21 @@ export type ConfigurationParams = {
 export type RenderingContext = {
     fspath?: string;   // Pathname that can be given to template engines for error messages
     content: string;   // Content to render
+    body?: string;     // Content body after parsing frontmatter
 
     renderTo?: string;  // Pathname for rendering output
 
     metadata: any;  // Data to be used for satisfying variables in templates
 
 
+};
+
+export enum RenderingFormat {
+    HTML = 'HTML',
+    PHP  = 'PHP',
+    JSON = 'JSON',
+    CSS  = 'CSS',
+    JS   = 'JS'
 };
 
 export class Configuration {

@@ -21,8 +21,9 @@
 import { promises as fsp } from 'fs';
 import * as fs from 'fs';
 import * as path from 'path';
+import matter from 'gray-matter';
 
-import { Configuration, RenderingContext } from './index';
+import { Configuration, RenderingContext, RenderingFormat } from './index';
 
 const _renderer_regex = Symbol('regex');
 const _renderer_akasha = Symbol('akasha');
@@ -129,12 +130,55 @@ export class Renderer {
         return fs.writeFileSync(path.join(renderTo, fpath), text, 'utf8');
     }
 
-    render(context: RenderingContext /*, text, metadata, vpinfo: DocumentInfo */) {
+    // Is parseMetadata and parseFrontmatter required?
+    // Shouldn't this be handled in FileCache?
+    // The idea is for Renderers that expect frontmatter
+    // to call parseFrontMatter from parseMetadata.
+
+    /**
+     * Parse any metadata in the document, by default no
+     * parsing is done.
+     * 
+     * @param context 
+     * @returns 
+     */
+    parseMetadata(context: RenderingContext): RenderingContext {
+        return context;
+    }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     * 
+     * @param context 
+     * @returns 
+     */
+    /* parseFrontmatter(context: RenderingContext) {
+
+        let fm;
+        try {
+            fm = matter(context.content);
+            // console.log(`HTMLRenderer frontmatter parsed frontmatter ${basedir} ${fpath}`);
+        } catch (e) {
+            console.log(`parseFrontmatter FAIL to read frontmatter in ${context.fspath} because ${e.stack}`);
+            fm = {};
+        }
+
+        context.body = fm.content;
+        context.metadata = fm.data;
+        return context;
+    } */
+
+    async render(context: RenderingContext): Promise<string> {
         throw new Error('implement render method');
     }
 
-    renderSync(context: RenderingContext /*, text, metadata, vpinfo: DocumentInfo */) {
+    renderSync(context: RenderingContext): string {
         throw new Error('implement renderSync method');
+    }
+
+    renderFormat(context: RenderingContext): RenderingFormat {
+        throw new Error('Implement renderFormat');
     }
 
     /* renderToFile(dir, fpath, renderTo, renderToPlus, metadata, config) {
@@ -146,4 +190,28 @@ export class Renderer {
 export type DocumentInfo = {
     fspath: string;
     vpath: string;
+}
+
+
+/**
+ * Parse frontmatter in the format of lines of dashes
+ * surrounding a YAML structure.
+ * 
+ * @param context 
+ * @returns 
+ */
+export function parseFrontmatter(context: RenderingContext) {
+
+    let fm;
+    try {
+        fm = matter(context.content);
+        // console.log(`HTMLRenderer frontmatter parsed frontmatter ${basedir} ${fpath}`);
+    } catch (e) {
+        console.log(`parseFrontmatter FAIL to read frontmatter in ${context.fspath} because ${e.stack}`);
+        fm = {};
+    }
+
+    context.body = fm.content;
+    context.metadata = fm.data;
+    return context;
 }

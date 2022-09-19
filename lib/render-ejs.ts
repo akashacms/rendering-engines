@@ -18,8 +18,8 @@
  */
 
 import * as path from 'path';
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
+import { Renderer, parseFrontmatter } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
 
 import * as ejs from 'ejs';
 import * as ejsutils from 'ejs/lib/utils.js';
@@ -30,7 +30,7 @@ const getMounted = (dir) => {
 };
 
 // TODO support .php.ejs
-export class EJSRenderer extends HTMLRenderer {
+export class EJSRenderer extends Renderer {
     constructor() {
         super(".html.ejs", /^(.*\.html|.*\.php)\.(ejs)$/);
     }
@@ -75,7 +75,7 @@ export class EJSRenderer extends HTMLRenderer {
         };
     }
 
-    renderSync(context: RenderingContext /* text, metadata, docInfo */) {
+    renderSync(context: RenderingContext) {
         let opts = this.getEJSOptions(context.fspath ? context.fspath : undefined);
         // console.log(`render  ${text} ${metadata} ${opts}`);
         try {
@@ -91,7 +91,7 @@ export class EJSRenderer extends HTMLRenderer {
         // return template(metadata, opts);
     }
 
-    render(context: RenderingContext /* text, metadata, docInfo */) {
+    async render(context: RenderingContext): Promise<string> {
         /* return Promise.resolve(ejs.render(text, metadata)); */
         return new Promise((resolve, reject) => {
             try {
@@ -107,6 +107,28 @@ export class EJSRenderer extends HTMLRenderer {
                 reject(err);
             }
         });
+    }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context 
+     * @returns 
+     */
+     parseMetadata(context: RenderingContext): RenderingContext {
+        return parseFrontmatter(context);
+    }
+
+    renderFormat(context: RenderingContext) {
+        if (!this.match(context.fspath)) {
+            throw new Error(`EJSRenderer does not render files with this extension ${context.fspath}`);
+        }
+        if (/\.php\.ejs$/.test(context.fspath)) {
+            return RenderingFormat.PHP;
+        } else {
+            return RenderingFormat.HTML;
+        }
     }
 
     /**

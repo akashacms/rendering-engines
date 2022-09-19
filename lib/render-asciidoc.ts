@@ -19,15 +19,17 @@
 
 // import * as path from 'path';
 // import * as util from 'util';
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index';
+import { Renderer, parseFrontmatter } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index';
 
 import { default as AsciiDoctor } from '@asciidoctor/core';
+import Document from '@asciidoctor/core';
+
 const asciidoctor = AsciiDoctor();
 
 const _renderer_doctype = Symbol('doctype');
 
-export class AsciidocRenderer extends HTMLRenderer {
+export class AsciidocRenderer extends Renderer {
     constructor() {
         super(".html.adoc", /^(.*\.html)\.(adoc)$/);
         this[_renderer_doctype] = 'article';
@@ -46,7 +48,7 @@ export class AsciidocRenderer extends HTMLRenderer {
     //     base_dir - controls where the include directive pulls files
     //     safe - enables safe mode (?? what does that mean ??)
     //     template_dir - controls where template files are found
-    convert(context: RenderingContext) {
+    convert(context: RenderingContext): string {
         var options = context.metadata.asciidoctor ? context.metadata.asciidoctor : {
             doctype: this[_renderer_doctype]
         };
@@ -69,17 +71,22 @@ export class AsciidocRenderer extends HTMLRenderer {
             }
         }
         // console.log(`convert ${util.inspect(options)}`);
-        return asciidoctor.convert(context.content, options);
+        const ret = asciidoctor.convert(context.content, options);
+        if (ret instanceof Document) {
+            throw new Error(`convert gave us a Document for ${context.fspath}`);
+        } else {
+            return <string>ret;
+        }
     }
 
-    renderSync(context: RenderingContext) {
+    renderSync(context: RenderingContext): string {
         // console.log('AsciidocRenderer renderSync '+ text);
-        var ret = this.convert(context /* .content, context.metadata */);
+        var ret = this.convert(context);
         // console.log(ret);
         return ret;
     }
 
-    render(context: RenderingContext) {
+    async render(context: RenderingContext): Promise<string> {
         // console.log('AsciidocRenderer render');
         return new Promise((resolve, reject) => {
             try {
@@ -88,5 +95,23 @@ export class AsciidocRenderer extends HTMLRenderer {
                 reject(e);
             }
         });
+    }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context 
+     * @returns 
+     */
+    parseMetadata(context: RenderingContext): RenderingContext {
+        return parseFrontmatter(context);
+    }
+
+    renderFormat(context: RenderingContext) {
+        if (!this.match(context.fspath)) {
+            throw new Error(`AsciidocRenderer does not render files with this extension ${context.fspath}`);
+        }
+        return RenderingFormat.HTML;
     }
 }

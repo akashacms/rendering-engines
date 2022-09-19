@@ -16,13 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
-export declare class NunjucksRenderer extends HTMLRenderer {
+import { Renderer } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
+export declare class NunjucksRenderer extends Renderer {
     constructor();
     njkenv(): any;
     render(context: RenderingContext): Promise<any>;
     renderSync(context: RenderingContext): any;
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context
+     * @returns
+     */
+    parseMetadata(context: RenderingContext): RenderingContext;
+    renderFormat(context: RenderingContext): RenderingFormat;
     /**
      * We cannot allow PHP code to run through Mahabhuta.
      */

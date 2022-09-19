@@ -14,9 +14,17 @@ export declare type ConfigurationParams = {
 export declare type RenderingContext = {
     fspath?: string;
     content: string;
+    body?: string;
     renderTo?: string;
     metadata: any;
 };
+export declare enum RenderingFormat {
+    HTML = "HTML",
+    PHP = "PHP",
+    JSON = "JSON",
+    CSS = "CSS",
+    JS = "JS"
+}
 export declare class Configuration {
     #private;
     constructor(params?: ConfigurationParams);

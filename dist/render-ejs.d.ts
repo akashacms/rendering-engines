@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
-export declare class EJSRenderer extends HTMLRenderer {
+import { Renderer } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
+export declare class EJSRenderer extends Renderer {
     constructor();
     getEJSOptions(fspath: any): {
         rmWhitespace: boolean;
@@ -36,7 +36,16 @@ export declare class EJSRenderer extends HTMLRenderer {
         };
     };
     renderSync(context: RenderingContext): any;
-    render(context: RenderingContext): Promise<unknown>;
+    render(context: RenderingContext): Promise<string>;
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context
+     * @returns
+     */
+    parseMetadata(context: RenderingContext): RenderingContext;
+    renderFormat(context: RenderingContext): RenderingFormat.HTML | RenderingFormat.PHP;
     /**
      * We cannot allow PHP code to run through Mahabhuta.
      */

@@ -1,5 +1,5 @@
 {
-  "name": "renderers",
+  "name": "@akashacms/renderers",
   "version": "0.9.0",
   "description": "",
   "main": "dist/index.js",

@@ -18,8 +18,8 @@
  */
 
 import * as path from 'path';
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
+import { Renderer, parseFrontmatter } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
 
 import { Liquid } from 'liquidjs';
 
@@ -28,7 +28,7 @@ const getMounted = (dir) => {
     else return dir.src;
 };
 
-export class LiquidRenderer extends HTMLRenderer {
+export class LiquidRenderer extends Renderer {
     constructor() {
         super('.html.liquid', /^(.*\.html)\.(liquid)$/);
     }
@@ -47,6 +47,24 @@ export class LiquidRenderer extends HTMLRenderer {
             err.cause = e;
             throw err;
         }
+    }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context 
+     * @returns 
+     */
+     parseMetadata(context: RenderingContext): RenderingContext {
+        return parseFrontmatter(context);
+    }
+
+    renderFormat(context: RenderingContext) {
+        if (!this.match(context.fspath)) {
+            throw new Error(`LiquidRenderer does not render files with this extension ${context.fspath}`);
+        }
+        return RenderingFormat.HTML;
     }
 
     /**

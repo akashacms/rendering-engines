@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Configuration, RenderingContext } from './index';
+import { Configuration, RenderingContext, RenderingFormat } from './index';
 export declare class Renderer {
     #private;
     constructor(name: string, regex: String | RegExp);
@@ -34,11 +34,35 @@ export declare class Renderer {
     readFileSync(basedir: any, fpath: any): string;
     writeFile(renderTo: any, fpath: any, text: any): Promise<void>;
     writeFileSync(renderTo: any, fpath: any, text: any): void;
-    render(context: RenderingContext): void;
-    renderSync(context: RenderingContext): void;
+    /**
+     * Parse any metadata in the document, by default no
+     * parsing is done.
+     *
+     * @param context
+     * @returns
+     */
+    parseMetadata(context: RenderingContext): RenderingContext;
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context
+     * @returns
+     */
+    render(context: RenderingContext): Promise<string>;
+    renderSync(context: RenderingContext): string;
+    renderFormat(context: RenderingContext): RenderingFormat;
 }
 export declare type DocumentInfo = {
     fspath: string;
     vpath: string;
 };
+/**
+ * Parse frontmatter in the format of lines of dashes
+ * surrounding a YAML structure.
+ *
+ * @param context
+ * @returns
+ */
+export declare function parseFrontmatter(context: RenderingContext): RenderingContext;
 //# sourceMappingURL=Renderer.d.ts.map

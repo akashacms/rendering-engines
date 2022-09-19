@@ -19,10 +19,10 @@
 
 import * as util from 'util';
 import * as path from 'path';
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
+import { Renderer, parseFrontmatter } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
 
-export class JSONRenderer extends HTMLRenderer {
+export class JSONRenderer extends Renderer {
     constructor() {
         super(".html.json", /^(.*\.html)\.(json)$/);
     }
@@ -58,4 +58,23 @@ export class JSONRenderer extends HTMLRenderer {
             throw err;
         }
     }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context 
+     * @returns 
+     */
+     parseMetadata(context: RenderingContext): RenderingContext {
+        return parseFrontmatter(context);
+    }
+
+    renderFormat(context: RenderingContext) {
+        if (!this.match(context.fspath)) {
+            throw new Error(`JSONRenderer does not render files with this extension ${context.fspath}`);
+        }
+        return RenderingFormat.HTML;
+    }
+
 }

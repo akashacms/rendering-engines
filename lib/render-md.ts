@@ -18,8 +18,8 @@
  */
 
 import * as path from 'path';
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index.js';
+import { Renderer, parseFrontmatter } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index.js';
 
 const mditConfig = {
     html:         true,         // Enable html tags in source
@@ -37,7 +37,7 @@ const mditConfig = {
 import { default as mdit } from 'markdown-it';
 var md;
 
-export class MarkdownRenderer extends HTMLRenderer {
+export class MarkdownRenderer extends Renderer {
     constructor() {
         super(".html.md", /^(.*\.html)\.(md)$/);
         md = mdit(mditConfig);
@@ -53,7 +53,7 @@ export class MarkdownRenderer extends HTMLRenderer {
         return this;
     }
   
-    renderSync(context: RenderingContext /* text, metadata, docInfo */) {
+    renderSync(context: RenderingContext): string {
         // console.log('MarkdownRenderer renderSync '+ text);
         try {
             const ret = md.render(context.content);
@@ -67,7 +67,7 @@ export class MarkdownRenderer extends HTMLRenderer {
         }
     }
   
-    render(context: RenderingContext /* text, metadata, docInfo */) {
+    async render(context: RenderingContext): Promise<string> {
         // console.log('MarkdownRenderer render');
         return new Promise((resolve, reject) => {
             try {
@@ -79,5 +79,24 @@ export class MarkdownRenderer extends HTMLRenderer {
                 reject(err);
             }
         });
+    }
+
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context 
+     * @returns 
+     */
+     parseMetadata(context: RenderingContext): RenderingContext {
+        return parseFrontmatter(context);
+    }
+
+    renderFormat(context: RenderingContext) {
+        // console.log(`renderFormat ${context}`);
+        if (!this.match(context.fspath)) {
+            throw new Error(`MarkdownRenderer does not render files with this extension ${context.fspath}`);
+        }
+        return RenderingFormat.HTML;
     }
 }

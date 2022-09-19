@@ -18,6 +18,7 @@
  */
 
 import { Renderer } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { default as less } from 'less';
@@ -33,22 +34,29 @@ export class CSSLESSRenderer extends Renderer {
         super(".css.less", /^(.*\.css)\.(less)$/);
     }
 
-    renderSync(context /* text, metadata */) {
+    renderSync(context: RenderingContext): string {
         throw new Error("Cannot render .css.less in synchronous environment");
     }
 
-    render(context /* text, metadata */) {
+    async render(context: RenderingContext): Promise<string> {
         return new Promise((resolve, reject) => {
             less.render(context.content, function (err, css: lessOutput) {
                 if (err) reject(err);
-                else     resolve(css);
+                else     resolve(css.css);
             });
         });
     }
 
+    renderFormat(context: RenderingContext) {
+        if (!this.match(context.fspath)) {
+            throw new Error(`CSSLESSRenderer does not render files with this extension ${context.fspath}`);
+        }
+        return RenderingFormat.CSS;
+    }
+
     // Why are these two functions here?  Are they needed?
     
-    async newRenderToFile(config, docInfo) {
+    /* async newRenderToFile(config, docInfo) {
         let lesstxt = await fsp.readFile(docInfo.fspath, 'utf8');
         let css = <lessOutput> await this.render({
             content: lesstxt,
@@ -56,9 +64,9 @@ export class CSSLESSRenderer extends Renderer {
         });
         let writeTo = path.join(config.renderDestination, docInfo.renderPath);
         await fsp.writeFile(writeTo, css.css);
-    }
+    } */
 
-    async renderToFile(basedir, fpath, renderTo, renderToPlus, metadata, config) {
+    /* async renderToFile(basedir, fpath, renderTo, renderToPlus, metadata, config) {
         var thisRenderer = this;
         var lesstxt = await thisRenderer.readFile(basedir, fpath);
         var css = <lessOutput> await thisRenderer.render({
@@ -68,5 +76,5 @@ export class CSSLESSRenderer extends Renderer {
         return await thisRenderer.writeFile(renderTo,
                                     thisRenderer.filePath(fpath),
                                     css.css);
-    }
+    } */
 }

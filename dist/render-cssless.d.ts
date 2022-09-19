@@ -17,11 +17,11 @@
  *  limitations under the License.
  */
 import { Renderer } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index';
 export declare class CSSLESSRenderer extends Renderer {
     constructor();
-    renderSync(context: any): void;
-    render(context: any): Promise<unknown>;
-    newRenderToFile(config: any, docInfo: any): Promise<void>;
-    renderToFile(basedir: any, fpath: any, renderTo: any, renderToPlus: any, metadata: any, config: any): Promise<void>;
+    renderSync(context: RenderingContext): string;
+    render(context: RenderingContext): Promise<string>;
+    renderFormat(context: RenderingContext): RenderingFormat;
 }
 //# sourceMappingURL=render-cssless.d.ts.map

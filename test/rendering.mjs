@@ -72,6 +72,39 @@ describe('Markdown', function() {
         assert.match(rendered, /.*.code.how are you.*/)
     });
 
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.md';
+        const renderer = config.findRenderer('.html.md');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.md');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
 });
 
 describe('AsciiDoctor', function() {
@@ -103,6 +136,40 @@ describe('AsciiDoctor', function() {
         assert.match(rendered, /.*\<p\>Preamble paragraph.\<\/p\>/);
         assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
     });
+
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.adoc';
+        const renderer = config.findRenderer('.html.adoc');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.adoc');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
 
 });
 
@@ -137,6 +204,40 @@ describe('EJS', function() {
         assert.match(rendered, /.*Heaven sent.*/);
         assert.match(rendered, /.*Hello.*World.*/);
     });
+
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.ejs';
+        const renderer = config.findRenderer('.html.ejs');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.ejs');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
 
 });
 
@@ -173,6 +274,40 @@ describe('Liquid', function() {
         assert.ok(caughtError);
     });
 
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.liquid';
+        const renderer = config.findRenderer('.html.liquid');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.liquid');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
+
 });
 
 describe('Nunjucks', function() {
@@ -206,6 +341,40 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Heaven sent.*/);
         assert.match(rendered, /.*Hello.*World.*/);
     });
+
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.njk';
+        const renderer = config.findRenderer('.html.njk');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.njk');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
 
 });
 
@@ -241,6 +410,40 @@ describe('Handlebars', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.handlebars';
+        const renderer = config.findRenderer('.html.handlebars');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.handlebars');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
+
 });
 
 describe('LESS', function() {
@@ -254,17 +457,17 @@ describe('LESS', function() {
             rendered = undefined;
         }
         assert.ok(rendered);
-        assert.ok(rendered.css);
+        // assert.ok(rendered.css);
         // console.log(rendered);
-        assert.match(rendered.css, /width: 10px;/);
-        assert.match(rendered.css, /height: 20px;/);
-        assert.match(rendered.css, /border-top: dotted 1px black;/);
-        assert.match(rendered.css, /border-bottom: solid 2px black;/);
-        assert.match(rendered.css, /#header .navigation/);
-        assert.match(rendered.css, /#header .logo/);
-        assert.ok(rendered.imports);
-        assert.ok(Array.isArray(rendered.imports));
-        assert.equal(rendered.imports.length, 0);
+        assert.match(rendered, /width: 10px;/);
+        assert.match(rendered, /height: 20px;/);
+        assert.match(rendered, /border-top: dotted 1px black;/);
+        assert.match(rendered, /border-bottom: solid 2px black;/);
+        assert.match(rendered, /#header .navigation/);
+        assert.match(rendered, /#header .logo/);
+        // assert.ok(rendered.imports);
+        // assert.ok(Array.isArray(rendered.imports));
+        // assert.equal(rendered.imports.length, 0);
     });
 
     it('should FAIL TO render Sync LESS style.css.less', function() {
@@ -279,6 +482,40 @@ describe('LESS', function() {
         assert.ok(typeof rendered === 'undefined' || rendered === null);
         assert.ok(caughtError === true);
     });
+
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.css.less';
+        const renderer = config.findRenderer('.css.less');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'CSS');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.css.less');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
 
 });
 
@@ -330,6 +567,41 @@ describe('JSON', function() {
         assert.match(rendered, /Row2 :- value 2/);
         assert.match(rendered, /Row3 :- value 3/);
     });
+
+    it('should show correct renderFormat', function() {
+        const fspath = 'path/to/foo.html.json';
+        const renderer = config.findRenderer('.html.json');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.json');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
+
 });
 
 });

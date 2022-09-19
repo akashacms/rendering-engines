@@ -16,13 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { HTMLRenderer } from './HTMLRenderer.js';
-import { RenderingContext } from './index';
-export declare class AsciidocRenderer extends HTMLRenderer {
+import { Renderer } from './Renderer.js';
+import { RenderingContext, RenderingFormat } from './index';
+export declare class AsciidocRenderer extends Renderer {
     constructor();
     configuration(options: any): this;
-    convert(context: RenderingContext): string | import("@asciidoctor/core").Asciidoctor.Document;
-    renderSync(context: RenderingContext): string | import("@asciidoctor/core").Asciidoctor.Document;
-    render(context: RenderingContext): Promise<unknown>;
+    convert(context: RenderingContext): string;
+    renderSync(context: RenderingContext): string;
+    render(context: RenderingContext): Promise<string>;
+    /**
+     * Parse frontmatter in the format of lines of dashes
+     * surrounding a YAML structure.
+     *
+     * @param context
+     * @returns
+     */
+    parseMetadata(context: RenderingContext): RenderingContext;
+    renderFormat(context: RenderingContext): RenderingFormat;
 }
 //# sourceMappingURL=render-asciidoc.d.ts.map
