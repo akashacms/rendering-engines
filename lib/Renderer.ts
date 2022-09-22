@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2014-2019 David Herron
+ * Copyright 2014-2022 David Herron
  *
  * This file is part of AkashaCMS (http://akashacms.com/).
  *
@@ -27,26 +27,18 @@ import {
     Configuration, RenderingContext, RenderingFormat
 } from './index';
 
-const _renderer_regex = Symbol('regex');
-const _renderer_akasha = Symbol('akasha');
-const _renderer_config = Symbol('config');
-
-// TODO - pass to child classes array of partial dirs, and layout dirs
-//      - define an object to pass instead of vpinfo - what fields does
-//        this object need?
-//        "fspath" - filesystem path (EJSRenderer)
-
 export class Renderer {
 
     #name: string;
     #config: Configuration;
+    #regex: Array<RegExp>;
 
     constructor(name: string, regex: String | RegExp) {
         this.#name  = name;
         if (regex instanceof RegExp) {
-            this[_renderer_regex] = [ regex ];
+            this.#regex = [ regex ];
         } else if (regex instanceof Array) {
-            this[_renderer_regex] = regex;
+            this.#regex = regex;
         } else {
             throw new Error('regex must be RegExp or Array of RegExp');
         }
@@ -61,8 +53,14 @@ export class Renderer {
     get layoutDirs(): Array<string> { return this.config.layoutDirs; }
     
     get name(): string { return this.#name; }
-    get regex(): Array<RegExp> { return this[_renderer_regex]; }
+    get regex(): Array<RegExp> { return this.#regex; }
 
+    /**
+     * Test whether the file name matches a known Renderer.
+     * 
+     * @param fname 
+     * @returns 
+     */
     match(fname): boolean {
         var matches;
         for (var regex of this.regex) {
@@ -79,6 +77,16 @@ export class Renderer {
     	extension: matches[2]
     }; */
 
+    /**
+     * Compute the pathname which a given input file should
+     * have after being rendered.
+     * 
+     * For example, an input file `example.html.md` would
+     * have an output file name `example.html`.
+     * 
+     * @param fname 
+     * @returns 
+     */
     filePath(fname): string {
         // log(`${this._name} filePath ${fname}`);
         var matches;
@@ -106,6 +114,12 @@ export class Renderer {
         return false;
     }
 
+    /**
+     * Compute the file extension from the input file name.
+     * 
+     * @param fname 
+     * @returns 
+     */
     fileExtension(fname): string {
         var matches;
         for (var regex of this.regex) {
@@ -115,6 +129,9 @@ export class Renderer {
         }
         return null;
     }
+
+    // These four are utility functions which we might find
+    // to not be desirable for this package.
 
     async readFile(basedir, fpath): Promise<string> {
         return fsp.readFile(path.join(basedir, fpath), 'utf8');
@@ -139,7 +156,12 @@ export class Renderer {
 
     /**
      * Parse any metadata in the document, by default no
-     * parsing is done.
+     * parsing is done.  A Renderer that supports files
+     * which contain metadata should implement this
+     * function to parse that metadata.
+     * 
+     * A function, `parseFrontmatter`, is available to parse
+     * _frontmatter_ block at the top of a file.
      * 
      * @param context 
      * @returns 
@@ -149,36 +171,32 @@ export class Renderer {
     }
 
     /**
-     * Parse frontmatter in the format of lines of dashes
-     * surrounding a YAML structure.
+     * Render input data allowing for asynchronous execution,
+     * producing output data.
      * 
      * @param context 
-     * @returns 
      */
-    /* parseFrontmatter(context: RenderingContext) {
-
-        let fm;
-        try {
-            fm = matter(context.content);
-            // console.log(`HTMLRenderer frontmatter parsed frontmatter ${basedir} ${fpath}`);
-        } catch (e) {
-            console.log(`parseFrontmatter FAIL to read frontmatter in ${context.fspath} because ${e.stack}`);
-            fm = {};
-        }
-
-        context.body = fm.content;
-        context.metadata = fm.data;
-        return context;
-    } */
-
     async render(context: RenderingContext): Promise<string> {
         throw new Error('implement render method');
     }
 
+    /**
+     * Render input data using only synchronous code, producing
+     * output data.  Some execution contexts can only run
+     * synchronous code.
+     * 
+     * @param context 
+     */
     renderSync(context: RenderingContext): string {
         throw new Error('implement renderSync method');
     }
 
+    /**
+     * Indicate the sort of output produced when rendering
+     * a file described in the rendering context.
+     * 
+     * @param context 
+     */
     renderFormat(context: RenderingContext): RenderingFormat {
         throw new Error('Implement renderFormat');
     }

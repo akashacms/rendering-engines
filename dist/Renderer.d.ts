@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2014-2019 David Herron
+ * Copyright 2014-2022 David Herron
  *
  * This file is part of AkashaCMS (http://akashacms.com/).
  *
@@ -26,9 +26,31 @@ export declare class Renderer {
     get layoutDirs(): Array<string>;
     get name(): string;
     get regex(): Array<RegExp>;
+    /**
+     * Test whether the file name matches a known Renderer.
+     *
+     * @param fname
+     * @returns
+     */
     match(fname: any): boolean;
+    /**
+     * Compute the pathname which a given input file should
+     * have after being rendered.
+     *
+     * For example, an input file `example.html.md` would
+     * have an output file name `example.html`.
+     *
+     * @param fname
+     * @returns
+     */
     filePath(fname: any): string;
     sourcePathMatchRenderPath(sourcePath: any, rendersTo: any): boolean;
+    /**
+     * Compute the file extension from the input file name.
+     *
+     * @param fname
+     * @returns
+     */
     fileExtension(fname: any): string;
     readFile(basedir: any, fpath: any): Promise<string>;
     readFileSync(basedir: any, fpath: any): string;
@@ -36,21 +58,38 @@ export declare class Renderer {
     writeFileSync(renderTo: any, fpath: any, text: any): void;
     /**
      * Parse any metadata in the document, by default no
-     * parsing is done.
+     * parsing is done.  A Renderer that supports files
+     * which contain metadata should implement this
+     * function to parse that metadata.
+     *
+     * A function, `parseFrontmatter`, is available to parse
+     * _frontmatter_ block at the top of a file.
      *
      * @param context
      * @returns
      */
     parseMetadata(context: RenderingContext): RenderingContext;
     /**
-     * Parse frontmatter in the format of lines of dashes
-     * surrounding a YAML structure.
+     * Render input data allowing for asynchronous execution,
+     * producing output data.
      *
      * @param context
-     * @returns
      */
     render(context: RenderingContext): Promise<string>;
+    /**
+     * Render input data using only synchronous code, producing
+     * output data.  Some execution contexts can only run
+     * synchronous code.
+     *
+     * @param context
+     */
     renderSync(context: RenderingContext): string;
+    /**
+     * Indicate the sort of output produced when rendering
+     * a file described in the rendering context.
+     *
+     * @param context
+     */
     renderFormat(context: RenderingContext): RenderingFormat;
 }
 /**
