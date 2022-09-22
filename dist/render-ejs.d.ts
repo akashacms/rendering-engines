@@ -23,7 +23,6 @@ export declare class EJSRenderer extends Renderer {
     getEJSOptions(fspath: any): {
         rmWhitespace: boolean;
         filename: any;
-        cache: boolean;
         views: any[];
     };
     compiledTemplate(text: any, docInfo: any): {
@@ -31,7 +30,6 @@ export declare class EJSRenderer extends Renderer {
         options: {
             rmWhitespace: boolean;
             filename: any;
-            cache: boolean;
             views: any[];
         };
     };

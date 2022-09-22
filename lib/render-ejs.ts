@@ -24,11 +24,6 @@ import { RenderingContext, RenderingFormat } from './index.js';
 import * as ejs from 'ejs';
 import * as ejsutils from 'ejs/lib/utils.js';
 
-const getMounted = (dir) => {
-    if (typeof dir === 'string') return dir;
-    else return dir.src;
-};
-
 // TODO support .php.ejs
 export class EJSRenderer extends Renderer {
     constructor() {
@@ -44,18 +39,14 @@ export class EJSRenderer extends Renderer {
         const ejsOptions = {
             rmWhitespace: true,
             filename: fspath,
-            cache: true,
+            // cache: true,
             views: []
         };
 
         // console.log(`getEJSOptions `, this);
         if (!this.config) throw new Error(`getEJSOptions no config`);
-        const layoutsMounted = this.layoutDirs
-                        ? this.layoutDirs.map(getMounted)
-                        : undefined;
-        const partialsMounted = this.partialDirs
-                        ? this.partialDirs.map(getMounted)
-                        : undefined;
+        const layoutsMounted = this.layoutDirs;
+        const partialsMounted = this.partialDirs;
         const loadFrom = partialsMounted
                         ? partialsMounted.concat(layoutsMounted)
                         : layoutsMounted;
@@ -82,7 +73,7 @@ export class EJSRenderer extends Renderer {
             return ejs.render(context.content, context.metadata, opts);
         } catch (e) {
             const docpath = context.fspath ? context.fspath : "unknown";
-            const err = new Error(`Error with EJS in file ${docpath}`);
+            const err = new Error(`Error with EJS in file ${docpath} because of ${e}`);
             err.cause = e;
             throw err;
         }
@@ -102,7 +93,7 @@ export class EJSRenderer extends Renderer {
                 // resolve(template(metadata, opts));
             } catch(e) {
                 const docpath = context.fspath ? context.fspath : "unknown";
-                const err = new Error(`Error with EJS in file ${docpath}`);
+                const err = new Error(`Error with EJS in file ${docpath} because of ${e}`);
                 err.cause = e;
                 reject(err);
             }
@@ -116,7 +107,7 @@ export class EJSRenderer extends Renderer {
      * @param context 
      * @returns 
      */
-     parseMetadata(context: RenderingContext): RenderingContext {
+    parseMetadata(context: RenderingContext): RenderingContext {
         return parseFrontmatter(context);
     }
 

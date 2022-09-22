@@ -25,11 +25,6 @@ import * as nunjucks from 'nunjucks';
 
 const _nunjuck_env = Symbol('id');
 
-const getMounted = (dir) => {
-    if (typeof dir === 'string') return dir;
-    else return dir.src;
-};
-
 export class NunjucksRenderer extends Renderer {
     constructor() {
         super(".html.njk", /^(.*\.html)\.(njk)$/);
@@ -46,9 +41,7 @@ export class NunjucksRenderer extends Renderer {
         // Get the paths for both the Layouts and Partials directories,
         // because with Nunjucks we are storing macros files in some
         // layouts directories.
-        const layoutsMounted = this.layoutDirs.map(getMounted);
-        const partialsMounted = this.partialDirs.map(getMounted);
-        const loadFrom = layoutsMounted.concat(partialsMounted);
+        const loadFrom = this.layoutDirs.concat(this.partialDirs);
 
         // console.log(`njkenv `, loadFrom);
 
@@ -59,7 +52,6 @@ export class NunjucksRenderer extends Renderer {
         this[_nunjuck_env] = new nunjucks.Environment(
             // Using watch=true requires installing chokidar
             new nunjucks.FileSystemLoader(loadFrom, { watch: false }),
-                // config.layoutDirs.concat(config.partialsDirs), { watch: false }),
             {
                 autoescape: false,
                 noCache: false
@@ -69,29 +61,35 @@ export class NunjucksRenderer extends Renderer {
         return this[_nunjuck_env];
     }
 
-    async render(context: RenderingContext /* text, metadata, docInfo */) {
+    async render(context: RenderingContext) {
         try {
+            // console.log(context);
             let env = this.njkenv();
-            return env.renderString(context.content, context.metadata);
+            return env.renderString(
+                context.body ? context.body : context.content,
+                context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
         } catch(e) {
             const docpath = context.fspath ? context.fspath : "unknown";
-            const err = new Error(`Error with Nunjucks in file ${docpath}`);
+            const err = new Error(`Error with Nunjucks in file ${docpath} because ${e}`);
             err.cause = e;
             throw err;
         }
     }
 
-    renderSync(context: RenderingContext /* text, metadata, docInfo */) {
+    renderSync(context: RenderingContext) {
         try {
+            // console.log(context);
             let env = this.njkenv();
-            return env.renderString(context.content, context.metadata);
+            return env.renderString(
+                context.body ? context.body : context.content,
+                context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
         } catch(e) {
             const docpath = context.fspath ? context.fspath : "unknown";
-            const err = new Error(`Error with Nunjucks in file ${docpath}`);
+            const err = new Error(`Error with Nunjucks in file ${docpath} because ${e}`);
             err.cause = e;
             throw err;
         }

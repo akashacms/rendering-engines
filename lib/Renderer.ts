@@ -23,7 +23,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import matter from 'gray-matter';
 
-import { Configuration, RenderingContext, RenderingFormat } from './index';
+import {
+    Configuration, RenderingContext, RenderingFormat
+} from './index';
 
 const _renderer_regex = Symbol('regex');
 const _renderer_akasha = Symbol('akasha');

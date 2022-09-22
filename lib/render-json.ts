@@ -27,25 +27,27 @@ export class JSONRenderer extends Renderer {
         super(".html.json", /^(.*\.html)\.(json)$/);
     }
 
-    renderSync(context: RenderingContext /* text, metadata, docInfo */) {
-        let json = JSON.parse(context.content);
+    renderSync(context: RenderingContext) {
         // console.log(`JSONRenderer renderSync ${text} ==> ${util.inspect(json)}`);
         // console.log(`JSONRenderer renderSync JSONFormatter ${metadata.JSONFormatter}`);
         try {
+            const text = context.body ? context.body : context.content;
+            let json = JSON.parse(text);
             return this.config.partialSync(context.metadata.JSONFormatter,
                                { data: json });
         } catch(e) {
 
             const docpath = context.fspath ? context.fspath : "unknown";
-            const err = new Error(`Error with JSON in file ${docpath}`);
+            const err = new Error(`Error with JSON in file ${docpath} because ${e}`);
             err.cause = e;
             throw err;
         }
     }
 
-    async render(context: RenderingContext /* text, metadata, docInfo */) {
+    async render(context: RenderingContext) {
         try {
-            let json = JSON.parse(context.content);
+            const text = context.body ? context.body : context.content;
+            let json = JSON.parse(text);
             // console.log(`JSONRenderer ${text} ==> ${util.inspect(json)}`);
             // console.log(`JSONRenderer JSONFormatter ${metadata.JSONFormatter}`);
             return await this.config.partial(context.metadata.JSONFormatter,
@@ -53,7 +55,7 @@ export class JSONRenderer extends Renderer {
         } catch(e) {
 
             const docpath = context.fspath ? context.fspath : "unknown";
-            const err = new Error(`Error with JSON in file ${docpath}`);
+            const err = new Error(`Error with JSON in file ${docpath} because ${e}`);
             err.cause = e;
             throw err;
         }

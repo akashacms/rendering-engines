@@ -61,7 +61,7 @@ export class MarkdownRenderer extends Renderer {
             return ret;
         } catch (e) {
             const docpath = context.fspath ? context.fspath : "unknown";
-            const err = new Error(`Error with Markdown in file ${docpath}`);
+            const err = new Error(`Error with Markdown in file ${docpath} because ${e}`);
             err.cause = e;
             throw err;
         }
@@ -74,7 +74,7 @@ export class MarkdownRenderer extends Renderer {
                 resolve(md.render(context.content));
             } catch(e) {
                 const docpath = context.fspath ? context.fspath : "unknown";
-                const err = new Error(`Error with Markdown in file ${docpath}`);
+                const err = new Error(`Error with Markdown in file ${docpath} because ${e}`);
                 err.cause = e;
                 reject(err);
             }

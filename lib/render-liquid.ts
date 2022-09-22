@@ -23,11 +23,6 @@ import { RenderingContext, RenderingFormat } from './index.js';
 
 import { Liquid } from 'liquidjs';
 
-const getMounted = (dir) => {
-    if (typeof dir === 'string') return dir;
-    else return dir.src;
-};
-
 export class LiquidRenderer extends Renderer {
     constructor() {
         super('.html.liquid', /^(.*\.html)\.(liquid)$/);
@@ -35,7 +30,7 @@ export class LiquidRenderer extends Renderer {
 
     async render(context: RenderingContext /* text, metadata, docInfo */) {
         try {
-            const partialsMounted = this.partialDirs.map(getMounted);
+            const partialsMounted = this.partialDirs;
             const engine    = new Liquid({
                 partials: partialsMounted,
                 extname: '.liquid'
