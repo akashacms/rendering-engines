@@ -53,10 +53,6 @@ export declare class Renderer {
     renderSync(context: RenderingContext): string;
     renderFormat(context: RenderingContext): RenderingFormat;
 }
-export declare type DocumentInfo = {
-    fspath: string;
-    vpath: string;
-};
 /**
  * Parse frontmatter in the format of lines of dashes
  * surrounding a YAML structure.

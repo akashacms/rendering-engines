@@ -189,12 +189,6 @@ export class Renderer {
 
 }
 
-export type DocumentInfo = {
-    fspath: string;
-    vpath: string;
-}
-
-
 /**
  * Parse frontmatter in the format of lines of dashes
  * surrounding a YAML structure.
