@@ -31,7 +31,7 @@ export class HandlebarsRenderer extends Renderer {
     async render(context: RenderingContext): Promise<string> {
         try {
             const template = Handlebars.compile(
-                context.body ? context.body : context.content
+                typeof context.body === 'string' ? context.body : context.content
             );
             return template(context.metadata);
         } catch(e) { 
@@ -44,7 +44,7 @@ export class HandlebarsRenderer extends Renderer {
     renderSync(context: RenderingContext) {
         try {
             const template = Handlebars.compile(
-                context.body ? context.body : context.content
+                typeof context.body === 'string' ? context.body : context.content
             );
             return template(context.metadata);
         } catch(e) { 

@@ -36,7 +36,7 @@ export class LiquidRenderer extends Renderer {
                 extname: '.liquid'
             });
             return await engine.parseAndRender(
-                context.body ? context.body : context.content,
+                typeof context.body === 'string' ? context.body : context.content,
                 context.metadata);
         } catch(e) {
             const docpath = context.fspath ? context.fspath : "unknown";

@@ -58,7 +58,7 @@ export class MarkdownRenderer extends Renderer {
         try {
             // console.log(`Markdown renderSync `, context);
             const ret = md.render(
-                context.body ? context.body : context.content
+                typeof context.body === 'string' ? context.body : context.content
             );
             // console.log(ret);
             return ret;
@@ -76,7 +76,7 @@ export class MarkdownRenderer extends Renderer {
             try {
                 // console.log(`Markdown render `, context);
                 const rendered = (md.render(
-                    context.body ? context.body : context.content
+                    typeof context.body === 'string' ? context.body : context.content
                 ));
                 // console.log(rendered);
                 resolve(rendered);

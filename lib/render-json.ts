@@ -31,7 +31,7 @@ export class JSONRenderer extends Renderer {
         // console.log(`JSONRenderer renderSync ${text} ==> ${util.inspect(json)}`);
         // console.log(`JSONRenderer renderSync JSONFormatter ${metadata.JSONFormatter}`);
         try {
-            const text = context.body ? context.body : context.content;
+            const text = typeof context.body === 'string' ? context.body : context.content;
             let json = JSON.parse(text);
             return this.config.partialSync(context.metadata.JSONFormatter,
                                { data: json });
@@ -46,7 +46,7 @@ export class JSONRenderer extends Renderer {
 
     async render(context: RenderingContext) {
         try {
-            const text = context.body ? context.body : context.content;
+            const text = typeof context.body === 'string' ? context.body : context.content;
             let json = JSON.parse(text);
             // console.log(`JSONRenderer ${text} ==> ${util.inspect(json)}`);
             // console.log(`JSONRenderer JSONFormatter ${metadata.JSONFormatter}`);

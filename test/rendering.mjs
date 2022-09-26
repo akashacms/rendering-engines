@@ -149,6 +149,22 @@ describe('Markdown', function() {
         assert.doesNotMatch(rendered, /Metadata test for Markdown/);
     });
 
+    it('should render Markdown meta-empty.html.md', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.md', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for Markdown/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
 });
 
 describe('AsciiDoctor', function() {
@@ -239,6 +255,22 @@ describe('AsciiDoctor', function() {
         assert.match(rendered, /This is the body/);
         assert.match(rendered, /Hello, World/);
         assert.doesNotMatch(rendered, /Metadata test for AsciiDoctor/);
+    });
+
+    it('should render Markdown meta-empty.html.adoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for AsciiDoctor/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
     });
 
 });
@@ -360,6 +392,22 @@ describe('EJS', function() {
 
     });
 
+    it('should render Markdown meta-empty.html.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.ejs', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for EJS/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
 });
 
 describe('Liquid', function() {
@@ -474,6 +522,22 @@ describe('Liquid', function() {
         }
         assert.ok(typeof rendered === 'undefined' || rendered === null);
         assert.ok(caughtError);
+    });
+
+    it('should render Markdown meta-empty.html.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.liquid', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for LiquidJS/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
     });
 
 });
@@ -592,6 +656,22 @@ describe('Nunjucks', function() {
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
         assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
+
+    it('should render Markdown meta-empty.html.njk', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.njk', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for Nunjucks/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
 
     });
 
@@ -714,6 +794,22 @@ describe('Handlebars', function() {
 
     });
 
+
+    it('should render Markdown meta-empty.html.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.handlebars', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for Handlebars/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
 
 });
 

@@ -66,7 +66,7 @@ export class NunjucksRenderer extends Renderer {
             // console.log(context);
             let env = this.njkenv();
             return env.renderString(
-                context.body ? context.body : context.content,
+                typeof context.body === 'string' ? context.body : context.content,
                 context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
@@ -83,7 +83,7 @@ export class NunjucksRenderer extends Renderer {
             // console.log(context);
             let env = this.njkenv();
             return env.renderString(
-                context.body ? context.body : context.content,
+                typeof context.body === 'string' ? context.body : context.content,
                 context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
