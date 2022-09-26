@@ -56,6 +56,7 @@ export class MarkdownRenderer extends Renderer {
     renderSync(context: RenderingContext): string {
         // console.log('MarkdownRenderer renderSync '+ text);
         try {
+            // console.log(`Markdown renderSync `, context);
             const ret = md.render(
                 context.body ? context.body : context.content
             );
@@ -73,9 +74,12 @@ export class MarkdownRenderer extends Renderer {
         // console.log('MarkdownRenderer render');
         return new Promise((resolve, reject) => {
             try {
-                resolve(md.render(
+                // console.log(`Markdown render `, context);
+                const rendered = (md.render(
                     context.body ? context.body : context.content
                 ));
+                // console.log(rendered);
+                resolve(rendered);
             } catch(e) {
                 const docpath = context.fspath ? context.fspath : "unknown";
                 const err = new Error(`Error with Markdown in file ${docpath} because ${e}`);

@@ -133,6 +133,22 @@ describe('Markdown', function() {
         assert.match(rc.fspath, /meta1.html.md$/);
         assert.match(rc.body, /Hello, World!/);
     });
+
+    it('should render Markdown meta1.html.md', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.md', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /This is the body/);
+        assert.match(rendered, /Hello, World/);
+        assert.doesNotMatch(rendered, /Metadata test for Markdown/);
+    });
+
 });
 
 describe('AsciiDoctor', function() {
@@ -209,6 +225,22 @@ describe('AsciiDoctor', function() {
         assert.match(rc.fspath, /meta1.html.adoc$/);
         assert.match(rc.body, /Hello, World!/);
     });
+
+    it('should render AsciiDoctor meta1.html.adoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /This is the body/);
+        assert.match(rendered, /Hello, World/);
+        assert.doesNotMatch(rendered, /Metadata test for AsciiDoctor/);
+    });
+
 });
 
 describe('EJS', function() {
@@ -298,13 +330,14 @@ describe('EJS', function() {
             console.error(e);
             rendered = undefined;
         }
+        // console.log(rendered);
         assert.ok(rendered);
         assert.match(rendered, /<h1>Metadata test for EJS<\/h1>/);
         assert.match(rendered, /message:.*Heaven sent.*/);
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
-
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
     });
 
     it('should render Sync EJS meta1.html.ejs', function() {
@@ -323,6 +356,7 @@ describe('EJS', function() {
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
 
     });
 
@@ -422,6 +456,7 @@ describe('Liquid', function() {
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
 
     });
 
@@ -536,6 +571,7 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
 
     });
 
@@ -555,6 +591,7 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
 
     });
 
@@ -653,6 +690,7 @@ describe('Handlebars', function() {
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
 
     });
 
@@ -672,6 +710,7 @@ describe('Handlebars', function() {
         assert.match(rendered, /.*Hello.*World.*/);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
 
     });
 
