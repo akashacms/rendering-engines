@@ -70,7 +70,9 @@ export class EJSRenderer extends Renderer {
         let opts = this.getEJSOptions(context.fspath ? context.fspath : undefined);
         // console.log(`render  ${text} ${metadata} ${opts}`);
         try {
-            return ejs.render(context.content, context.metadata, opts);
+            return ejs.render(
+                context.body ? context.body : context.content,
+                context.metadata, opts);
         } catch (e) {
             const docpath = context.fspath ? context.fspath : "unknown";
             const err = new Error(`Error with EJS in file ${docpath} because of ${e}`);
@@ -88,7 +90,9 @@ export class EJSRenderer extends Renderer {
             try {
                 let opts = this.getEJSOptions(context.fspath ? context.fspath : undefined);
                 // console.log(`render async ${context.content} ${context.metadata} ${opts}`);
-                resolve(ejs.render(context.content, context.metadata, opts));
+                resolve(ejs.render(
+                    context.body ? context.body : context.content,
+                    context.metadata, opts));
                 // const { template, opts } = this.compiledTemplate(text, vpinfo);
                 // resolve(template(metadata, opts));
             } catch(e) {

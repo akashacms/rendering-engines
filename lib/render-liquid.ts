@@ -35,7 +35,9 @@ export class LiquidRenderer extends Renderer {
                 partials: partialsMounted,
                 extname: '.liquid'
             });
-            return await engine.parseAndRender(context.content, context.metadata);
+            return await engine.parseAndRender(
+                context.body ? context.body : context.content,
+                context.metadata);
         } catch(e) {
             const docpath = context.fspath ? context.fspath : "unknown";
             const err = new Error(`Error with Liquid in file ${docpath}`);
