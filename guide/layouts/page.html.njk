@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>{{ title | escape }}</title>
+        {% for style in stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{{ style | escape }}"/>
+        {% endfor %}
+    </head>
+    <body>
+        <h1>{{ title | escape }}</h1>
+        <article>
+            {{ content }}
+        </article>
+    </body>
+</html>

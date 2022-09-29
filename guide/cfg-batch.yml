@@ -1,0 +1,13 @@
+batchmode: true
+
+dirs:
+    documents:
+        - mounted: documents
+          mountPoint: '/'
+    output: ./out
+    layout: ./layouts
+    partial: ./partials
+
+metadata:
+    stylesheets:
+        - /style.css
