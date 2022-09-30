@@ -1,0 +1,15 @@
+{
+  "name": "guidecms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "setup": "npm install && cd .. && npm install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@akashacms/stacked-dirs": "^0.8.2"
+  }
+}

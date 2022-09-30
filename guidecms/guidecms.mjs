@@ -1,5 +1,3 @@
-
-
 import { DirsWatcher } from '@akashacms/stacked-dirs';
 import path from 'node:path';
 import { promises as fsp } from 'node:fs';
@@ -9,7 +7,7 @@ import yaml from 'js-yaml';
 // Read the configuration from a YAML file
 
 if (process.argv.length < 2 || !process.argv[2]) {
-    console.error('USAGE: node index.mjs config.yaml');
+    console.error('USAGE: node guidecms.mjs config.yml');
     process.exit(1);
 }
 
@@ -19,13 +17,10 @@ let cfg = yaml.load(ymltxt);
 // Set variables from the config file
 
 const batchmode = cfg.batchmode;
-
 const docsDirectories = cfg.dirs.documents;
-
 const renderedOutput = cfg.dirs.output;
 const layoutsDir = cfg.dirs.layout;
 const partialsDir = cfg.dirs.partial;
-
 const metadata = cfg.metadata;
 
 ////////////// END OF CONFIGURATION SECTION
@@ -102,6 +97,7 @@ async function render(info) {
     if (!renderer) {
         const copyTo = path.join(renderedOutput, info.vpath);
         console.log(`COPY ${info.vpath} to ${copyTo}`);
+        await fsp.mkdir(path.dirname(copyTo), { recursive: true });
         await fsp.copyFile(info.fspath, copyTo);
         return;
     }
@@ -127,7 +123,6 @@ async function render(info) {
     if (!context.metadata || !context.metadata.layout) {
         layoutRendered = rendered;
     } else {
-
         const layoutFN = await renderers.findLayout(context.metadata.layout);
         let layoutContext = {
             fspath: layoutFN,
@@ -152,6 +147,4 @@ async function render(info) {
     await fsp.mkdir(path.dirname(renderTo), { recursive: true });
     console.log(`RENDER ${info.vpath} ==> ${renderTo}`);
     await fsp.writeFile(renderTo, layoutRendered, 'utf-8');
-    
 }
-
