@@ -1,6 +1,6 @@
 package-lock.json
 node_modules
 TODO.md
-# For now, include dist, but it 
-# it should be left out of .npmignore
-dist
+guide
+guidecms
+test
