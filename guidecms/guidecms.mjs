@@ -25,10 +25,25 @@ const metadata = cfg.metadata;
 
 ////////////// END OF CONFIGURATION SECTION
 
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+
 const renderers = new Renderers.Configuration({
     partialDirs: partialsDir ? [ partialsDir ] : undefined,
     layoutDirs: layoutsDir ? [ layoutsDir ] : undefined
 });
+
+const rendererMarkdown = renderers.findRendererName('.html.md');
+
+rendererMarkdown.configuration({
+    html:         true,         // Enable html tags in source
+    xhtmlOut:     false,         // Use '/' to close single tags (<br />)
+    breaks:       false,        // Convert '\n' in paragraphs into <br>
+    linkify:      true,         // Autoconvert url-like texts to links
+    typographer:  false,        // Enable smartypants and other sweet transforms
+})
+.use(require('markdown-it-highlightjs'), { auto: true, code: true, inline: true })
+.use(require('markdown-it-expand-tabs'), { tabWidth: 4 });
 
 const docsWatcher = new DirsWatcher('documents');
 
