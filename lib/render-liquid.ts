@@ -28,7 +28,7 @@ export class LiquidRenderer extends Renderer {
         super('.html.liquid', /^(.*\.html)\.(liquid)$/);
     }
 
-    async render(context: RenderingContext /* text, metadata, docInfo */) {
+    async render(context: RenderingContext): Promise<string> {
         try {
             const partialsMounted = this.partialDirs;
             const engine    = new Liquid({
@@ -44,6 +44,10 @@ export class LiquidRenderer extends Renderer {
             err.cause = e;
             throw err;
         }
+    }
+
+    renderSync(context: RenderingContext): string {
+        throw new Error(`LiquidJS does not support sync execution`);
     }
 
     /**

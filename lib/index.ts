@@ -33,7 +33,7 @@ import { LiquidRenderer } from './render-liquid';
 import { MarkdownRenderer } from './render-md';
 import { NunjucksRenderer } from './render-nunjucks';
 
-export { Renderer } from './Renderer';
+export { Renderer, parseFrontmatter } from './Renderer';
 
 import {
     IsIntRange, IsInt, IsFloatRange, IsFloat,
@@ -72,8 +72,6 @@ export type RenderingContext = {
     renderTo?: string;  // Pathname for rendering output
 
     metadata: any;  // Data to be used for satisfying variables in templates
-
-
 };
 
 export enum RenderingFormat {
