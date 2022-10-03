@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "dopublish": "npm publish --access public"
+    "dopublish": "npm publish --access public",
+    "publish-guide": "cd guide && npm run publish",
+    "test": "cd test && npm test"
   },
   "keywords": [],
   "author": "",
