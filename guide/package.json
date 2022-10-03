@@ -6,7 +6,8 @@
     "watch": "npm-run-all --parallel watcher preview",
     "preview": "live-server out",
     "watcher": "node ../guidecms/guidecms.mjs cfg.yml",
-    "build": "node ../guidecms/guidecms.mjs cfg-batch.yml"
+    "build": "node ../guidecms/guidecms.mjs cfg-batch.yml",
+    "publish": "npx gh-pages -d out"
   },
   "keywords": [],
   "author": "",

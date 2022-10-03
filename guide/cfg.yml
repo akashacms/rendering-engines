@@ -12,10 +12,10 @@ dirs:
 
 metadata:
     stylesheets:
-        - /style.css
-        - /vendor/bootstrap/css/bootstrap.css
+        - style.css
+        - vendor/bootstrap/css/bootstrap.css
         - https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css
     jsbottom:
         # The .bundle.js version includes Popper
-        - /vendor/bootstrap/js/bootstrap.bundle.js
+        - vendor/bootstrap/js/bootstrap.bundle.js
         - https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js

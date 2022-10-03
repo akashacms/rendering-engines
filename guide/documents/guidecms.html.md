@@ -25,5 +25,7 @@ Steps after setting up the project directory is:
 
 The result is a directory, `out`, containing the HTML/JS/CSS for a website.  You can upload this to any public webserver.  Using the `gh-pages` package in the NPM repository, the website can easily be published to Github Pages.
 
+A tricky detail is that this documentation website is at: https://akashacms.github.io/rendering-engines/ -- This means we cannot be lazy and use absolute URLs.  Instead, all content files are located in the root directory, and all URLs are relative from the content file.
+
 A complete blog post describing GuideCMS is at: https://akashacms.com/news/2022/09/renderers-package.html.md
 

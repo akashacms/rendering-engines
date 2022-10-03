@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "dopublish": "npm publish --access public"
   },
   "keywords": [],
   "author": "",

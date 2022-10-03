@@ -7,7 +7,8 @@
     "test": "mocha setup.mjs rendering.mjs partials.mjs",
     "test:setup": "mocha setup.mjs",
     "test:rendering": "mocha rendering.mjs",
-    "test:partials": "mocha partials.mjs"
+    "test:partials": "mocha partials.mjs",
+    "setup": "cd .. && npm install"
   },
   "keywords": [],
   "author": "",
