@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 import { Renderer } from './Renderer';
-export { Renderer } from './Renderer';
+export { Renderer, parseFrontmatter } from './Renderer';
 export declare type ConfigurationParams = {
     partialDirs?: Array<string>;
     findPartial?: (fn: any) => Promise<string>;

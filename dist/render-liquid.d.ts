@@ -20,7 +20,8 @@ import { Renderer } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index.js';
 export declare class LiquidRenderer extends Renderer {
     constructor();
-    render(context: RenderingContext): Promise<any>;
+    render(context: RenderingContext): Promise<string>;
+    renderSync(context: RenderingContext): string;
     /**
      * Parse frontmatter in the format of lines of dashes
      * surrounding a YAML structure.
