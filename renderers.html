@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Renderer classes</title>
+        
+        <link rel="stylesheet" type="text/css" href="/style.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css"/>
+        
+        
+    </head>
+    <body>
+        <head class="container-fluid">
+        <h1>Renderer classes</h1>
+        </head>
+        <div class="container-md">
+            <div class="row">
+                <article class="col">
+                    <p>The Renderer is a base class from which one implement Renderer classes.  For example, EJSRenderer renders EJS files, MarkdownRenderer renders Markdown files, and both are subclasses of Renderer.</p>
+<p>To create your own Renderer, you start by subclassing the Renderer class.  Doing so looks something like this:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">Renderer</span>, parseFrontmatter } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@akashacms/renderers&#x27;</span>;
+...
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExampleRenderer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Renderer</span> {
+    ...
+}
+</code></pre>
+<p>You then fill in a few methods, and voila you have a Renderer implementation.  The methods are usually easy to code.  The <code class="hljs"><span class="hljs-attribute">parseFrontmatter</span></code> function is made available for files which can store metadata as <em>frontmatter</em> -- meaning a line of three dashes, a block of YAML data, and a closing line of three dashes.</p>
+<p>The constructor method usually looks like this:</p>
+<pre><code class="hljs language-js"><span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">super</span>(<span class="hljs-string">&quot;.html.example&quot;</span>, <span class="hljs-regexp">/^(.*\.html)\.(example)$/</span>);
+}
+</code></pre>
+<p>The first parameter is the name for the Renderer, and typically the name will be the file extension it handles.  The second is a regular expression used in matching file names.</p>
+<p>The pattern used in AkashaCMS, and carries over to <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code>, is that input files have a double extension.  The last extension indicates the format of the output file, for example <code class="hljs"><span class="hljs-title">.ejs</span></code> means it is an EJS template.  The next extension indicates the format of the output file.  So, <code class="hljs"><span class="hljs-title">.html.ejs</span></code> means a Renderer which converts EJS files to HTML, and <code class="hljs"><span class="hljs-title">.less.css</span></code> means a Renderer for converting LESS files to CSS.</p>
+<p>The regular expression has sub-expressions allowing us to capture the first extension, and the output file name.  In other words, <code class="hljs"><span class="hljs-built_in">example</span>.html.ejs</code> would match as <code class="hljs">[ <span class="hljs-symbol">&#x27;example.html.ejs</span>&#x27;, <span class="hljs-symbol">&#x27;example.html</span>&#x27;, <span class="hljs-symbol">&#x27;.ejs</span>&#x27; ]</code>.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">filePath</span></code> method in the Renderer class relies on this policy of structuring regular expressions in this way.  This function simply matches the regular expression against the input file name, then returns <code class="hljs"><span class="hljs-attribute">matches</span>[<span class="hljs-number">1</span>]</code>.  Through the magic of judiciously constructed file names and regular expressions, that is the correct output file name.</p>
+<p>Next, one implements the <code class="hljs"><span class="hljs-attribute">render</span></code> and <code class="hljs"><span class="hljs-attribute">renderSync</span></code> methods.  For these methods there must be some code which handles rendering that type of file.  For example, with EJSRenderer that is the <code class="hljs"><span class="hljs-attribute">ejs</span></code> package, and with LESSCSSRenderer that is the <code class="hljs"><span class="hljs-keyword">less</span></code> package.</p>
+<p>The precise details of the rendering code is outside the scope of this conversation.  Suffice to say that there is likely to be a function which accepts a <code class="hljs"><span class="hljs-built_in">string</span></code> as input, and produces a <code class="hljs"><span class="hljs-built_in">string</span></code> as output.  That function may allow a metadata object.</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">async</span> <span class="hljs-title function_">render</span>(<span class="hljs-attr">context</span>: <span class="hljs-title class_">RenderingContext</span>): <span class="hljs-title class_">Promise</span>&lt;string&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-variable constant_">MODULE</span>.<span class="hljs-title function_">render</span>(
+        context.<span class="hljs-property">body</span> ? context.<span class="hljs-property">body</span> : context.<span class="hljs-property">content</span>,
+        context.<span class="hljs-property">metadata</span>);
+}
+
+<span class="hljs-title function_">renderSync</span>(<span class="hljs-attr">context</span>: <span class="hljs-title class_">RenderingContext</span>): string {
+    <span class="hljs-keyword">return</span> <span class="hljs-variable constant_">MODULE</span>.<span class="hljs-title function_">renderSync</span>(
+        context.<span class="hljs-property">body</span> ? context.<span class="hljs-property">body</span> : context.<span class="hljs-property">content</span>,
+        context.<span class="hljs-property">metadata</span>);
+}
+</code></pre>
+<p>Some content rendering modules will only support asynchronous rendering.  If that's the case, then <code class="hljs"><span class="hljs-attribute">renderSync</span></code> must instead throw an Error explaining it cannot be used in a synchronous context.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">RenderingContext</span></code> type is defined this way:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">export</span> type <span class="hljs-title class_">RenderingContext</span> = {
+    fspath?: string;   <span class="hljs-comment">// Pathname that can be given to template engines for error messages</span>
+    <span class="hljs-attr">content</span>: string;   <span class="hljs-comment">// Content to render</span>
+    body?: string;     <span class="hljs-comment">// Content body after parsing frontmatter</span>
+    <span class="hljs-attr">metadata</span>: any;  <span class="hljs-comment">// Data to be used for satisfying variables in templates</span>
+};
+</code></pre>
+<p>The <code class="hljs"><span class="hljs-attribute">fspath</span></code> member is the filesystem path of the file.  Since Renderer classes do not read the file they are rendering, <code class="hljs"><span class="hljs-attribute">fspath</span></code> is primarily used for error messages.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">content</span></code> and <code class="hljs"><span class="hljs-keyword">body</span></code> members contain the input content.  The <code class="hljs"><span class="hljs-attribute">content</span></code> member contains the original content, and the <code class="hljs"><span class="hljs-keyword">body</span></code> member contains the content left over after parsing metadata.  Typically, metadata is represented as frontmatter (described earlier) prepended to the front of the file, and the <code class="hljs"><span class="hljs-keyword">body</span></code> is the part after the frontmatter.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">metadata</span></code> member contains an object representing the data extracted from the file.</p>
+<p>The Renderer class provides a default implementation of <code class="hljs"><span class="hljs-attribute">parseMetadata</span></code> which does nothing.  Since we expect in most cases to represent metadata using frontmatter, the <code class="hljs"><span class="hljs-attribute">parseFrontmatter</span></code> function is made available.  It parses the YAML text in the format described above.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">parseMetadata</span></code> method which uses <code class="hljs"><span class="hljs-attribute">parseFrontmatter</span></code> looks like this:</p>
+<pre><code class="hljs language-js"><span class="hljs-title function_">parseMetadata</span>(<span class="hljs-attr">context</span>: <span class="hljs-title class_">RenderingContext</span>): <span class="hljs-title class_">RenderingContext</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-title function_">parseFrontmatter</span>(context);
+}
+</code></pre>
+<p>Another function to implement is <code class="hljs"><span class="hljs-attribute">renderFormat</span></code>, which indicates the format of the rendered output data.  The package provides an <code class="hljs"><span class="hljs-keyword">enum</span></code> describing the available formats:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">export</span> enum <span class="hljs-title class_">RenderingFormat</span> {
+    <span class="hljs-variable constant_">HTML</span> = <span class="hljs-string">&#x27;HTML&#x27;</span>,
+    <span class="hljs-variable constant_">PHP</span>  = <span class="hljs-string">&#x27;PHP&#x27;</span>,
+    <span class="hljs-title class_">JSON</span> = <span class="hljs-string">&#x27;JSON&#x27;</span>,
+    <span class="hljs-variable constant_">CSS</span>  = <span class="hljs-string">&#x27;CSS&#x27;</span>,
+    <span class="hljs-variable constant_">JS</span>   = <span class="hljs-string">&#x27;JS&#x27;</span>
+};
+</code></pre>
+<p>And a typical implementation looks like this:</p>
+<pre><code class="hljs language-js"><span class="hljs-title function_">renderFormat</span>(<span class="hljs-params">context: RenderingContext</span>) {
+    <span class="hljs-keyword">if</span> (!<span class="hljs-variable language_">this</span>.<span class="hljs-title function_">match</span>(context.<span class="hljs-property">fspath</span>)) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`ExampleRenderer does not render files with this extension <span class="hljs-subst">${context.fspath}</span>`</span>);
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">RenderingFormat</span>.<span class="hljs-property">HTML</span>;
+}
+</code></pre>
+<p>This inspects the <code class="hljs"><span class="hljs-attribute">fspath</span></code> to see if it matches the file extensions supported by this Renderer.  If not, the code calling this function did something wrong.  In any case, for a Renderer that produces HTML, the <code class="hljs">RenderingFormat.<span class="hljs-built_in">HTML</span></code> field is the correct value to return.</p>
+<p>You may need to construct an <em>options</em> object to supply to the rendering engine.  For example, NunjucksRenderer and EJSRenderer support a template command that loads and renders other templates.  If true, you will need to supply an array of directory names where the engine can find template files, or a function that searches for the templates.  How you do this depends on the rendering engine you're interfacing with.</p>
+
+                </article>
+                <section class="col-2">
+                    <div class="btn-group-vertical" role="group" 
+                            aria-label="Vertical button group">
+                        <a href="/index.html" class="btn btn-primary">Overview</a>
+                        <a href="/setup.html" class="btn btn-primary">Getting Started</a>
+                        <a href="/rendering.html" class="btn btn-primary">Rendering</a>
+                        <a href="/renderers.html" class="btn btn-primary">Renderers</a>
+                        <a href="/configuration.html" class="btn btn-primary">Configuration</a>
+                        <a href="/configuring-markdown.html" class="btn btn-primary">Configuring Markdown</a>
+                        <a href="/guidecms.html" class="btn btn-primary">GuideCMS</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+        
+        <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
+        
+
+        <script>
+            try {
+                hljs.initHighlightingOnLoad();
+            } catch (err) { }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,252 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Rendering content</title>
+        
+        <link rel="stylesheet" type="text/css" href="/style.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css"/>
+        
+        
+    </head>
+    <body>
+        <head class="container-fluid">
+        <h1>Rendering content</h1>
+        </head>
+        <div class="container-md">
+            <div class="row">
+                <article class="col">
+                    <p>The <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code> package renders content that you've already read into memory.  It does not support your application supplying a file name, reading the file, and rendering it.  Your application is responsible for reading the source file, and supplying the data to the rendering package.</p>
+<p>The overall rendering process is:</p>
+<ul>
+<li>Your application locates the input file, and reads it into memory</li>
+<li>Your application asks the <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code> package for the Renderer class for this type of input file</li>
+<li>Your application uses the Renderer class to parse the metadata, or perhaps your application parses the metadata itself</li>
+<li>Your application constructs a RenderingContext object</li>
+<li>Your application calls either <code class="hljs"><span class="hljs-attribute">render</span></code> or <code class="hljs"><span class="hljs-attribute">renderSync</span></code> method</li>
+<li>Your application does whatever it is supposed to do with the rendered data</li>
+</ul>
+<p>Asking for the Renderer object:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">const</span> renderer = renderers.<span class="hljs-title function_">findRenderPath</span>(fspath);
+</code></pre>
+<p>Each Renderer class contains one or more regular expressions that match against the file system path for the input file.  For the built-in Renderers a dual file extension is used like <code class="hljs"><span class="hljs-built_in">example</span>.html.ejs</code>.  The <code class="hljs"><span class="hljs-title">.ejs</span></code> portion says the Renderer supports EJS templates, and the <code class="hljs"><span class="hljs-title">.html</span></code> portion says the input file will be converted to HTML.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">findRenderPath</span></code> does not reach out to disk to check that the file exists.  It simply matches regular expressions against <code class="hljs"><span class="hljs-attribute">fspath</span></code>.</p>
+<p>To determine the file name for the rendered output:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">const</span> fnOutput = renderer.<span class="hljs-title function_">filePath</span>(fspath);
+</code></pre>
+<p>Using the file name pattern above, <code class="hljs"><span class="hljs-built_in">example</span>.html.ejs</code>, this function uses the regular expression to extract the <code class="hljs"><span class="hljs-built_in">example</span>.html</code> portion.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">RenderingContext</span></code> type is defined this way:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">export</span> type <span class="hljs-title class_">RenderingContext</span> = {
+    fspath?: string;   <span class="hljs-comment">// Pathname that can be given to template engines for error messages</span>
+    <span class="hljs-attr">content</span>: string;   <span class="hljs-comment">// Content to render</span>
+    body?: string;     <span class="hljs-comment">// Content body after parsing frontmatter</span>
+    <span class="hljs-attr">metadata</span>: any;  <span class="hljs-comment">// Data to be used for satisfying variables in templates</span>
+};
+</code></pre>
+<p>As you can see this is a simple object with sensible fields.  Typically your application will start this object as so:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">let</span> context = {
+    <span class="hljs-attr">fspath</span>: <span class="hljs-string">&#x27;path/to/example.html.ejs&#x27;</span>,
+    <span class="hljs-attr">content</span>: <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">readFile</span>(<span class="hljs-string">&#x27;path/to/example.html.ejs&#x27;</span>, <span class="hljs-string">&#x27;utf-8&#x27;</span>)
+}
+</code></pre>
+<p>The <code class="hljs"><span class="hljs-attribute">fsp</span></code> name refers to what you get when importing <code class="hljs"><span class="hljs-keyword">node</span><span class="hljs-title">:fs</span>/promises</code> like this:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">import</span> { promises <span class="hljs-keyword">as</span> fsp } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;fs&#x27;</span>;
+<span class="hljs-keyword">import</span> fs <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;fs&#x27;</span>;
+</code></pre>
+<p>This way <code class="hljs"><span class="hljs-attribute">fsp</span></code> is clearly the promisified version of <code class="hljs"><span class="hljs-built_in">fs</span></code>.</p>
+<p>The Renderer instance includes a function, <code class="hljs"><span class="hljs-attribute">parseMetadata</span></code> for parsing metadata, with each instance providing a function suitable for the type of input file.  For example the <code class="hljs"><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">LESSCSSRenderer</span>.</span></span>parseMetadata</code> does nothing since there is no usefulness to metadata in a CSS file.</p>
+<pre><code class="hljs language-js">context = renderer.<span class="hljs-title function_">parseMetadata</span>(context);
+</code></pre>
+<p>It takes a RenderingContext object, parses the metadata, assigning two results.  The <code class="hljs"><span class="hljs-keyword">body</span></code> element contains the portion of <code class="hljs"><span class="hljs-attribute">content</span></code> which does not include the metadata.  The <code class="hljs"><span class="hljs-attribute">metadata</span></code> element is an object containing the data.</p>
+<p>Most of the built-in Renderer instances support a <em>frontmatter</em> block for storing metadata.</p>
+<pre><code class="hljs language-html">---
+title: Page title goes here
+layout: layout-template-file-name.html.ejs
+---
+
+Input content body
+</code></pre>
+<p>The first portion, between <code class="hljs"><span class="hljs-meta">---</span></code> lines, is the frontmatter, and is in YAML format.  You can use the full panoply of YAML features, if desired.  The remainder of the file is what is assigned to the <code class="hljs"><span class="hljs-keyword">body</span></code>, and the parsed form of the frontmatter block is assigned to <code class="hljs"><span class="hljs-attribute">metadata</span></code>.</p>
+<p>At this point your application is ready to render the content.  There are two methods, <code class="hljs"><span class="hljs-attribute">render</span></code> and <code class="hljs"><span class="hljs-attribute">renderSync</span></code>.  The latter is available for contexts requiring synchronous execution, and does not make any async calls.  The <code class="hljs"><span class="hljs-attribute">render</span></code> method supports asynchronous execution and returns a <code class="hljs"><span class="hljs-built_in">Promise</span></code> which resolves to the rendered content.</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">const</span> rendered = <span class="hljs-keyword">await</span> renderer.<span class="hljs-title function_">render</span>(context);
+<span class="hljs-comment">// OR</span>
+<span class="hljs-keyword">const</span> rendered = renderer.<span class="hljs-title function_">renderSync</span>(context);
+</code></pre>
+<h2>Complete example of rendering content</h2>
+<p>That was a lot of explanation, so let's look at a concrete example:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">const</span> renderer = renderers.<span class="hljs-title function_">findRendererPath</span>(fspath);
+<span class="hljs-keyword">if</span> (!renderer) {
+    <span class="hljs-keyword">const</span> copyTo = path.<span class="hljs-title function_">join</span>(renderedOutput, fspath);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`COPY <span class="hljs-subst">${fspath}</span> to <span class="hljs-subst">${copyTo}</span>`</span>);
+    <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">mkdir</span>(path.<span class="hljs-title function_">dirname</span>(copyTo), { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+    <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">copyFile</span>(fspath, copyTo);
+    <span class="hljs-keyword">return</span>;
+}
+<span class="hljs-keyword">let</span> context = {
+    <span class="hljs-attr">fspath</span>: fspath,
+    <span class="hljs-attr">content</span>: <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">readFile</span>(fspath, <span class="hljs-string">&#x27;utf-8&#x27;</span>)
+};
+context = renderer.<span class="hljs-title function_">parseMetadata</span>(context);
+<span class="hljs-comment">// console.log(`vpath ${fspath}`, context);</span>
+<span class="hljs-keyword">let</span> rendered;
+<span class="hljs-keyword">try</span> {
+    rendered = <span class="hljs-keyword">await</span> renderer.<span class="hljs-title function_">render</span>(context);
+} <span class="hljs-keyword">catch</span> (err) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`Failed to render <span class="hljs-subst">${fspath}</span> because <span class="hljs-subst">${err}</span>`</span>);
+}
+
+<span class="hljs-keyword">const</span> renderTo = path.<span class="hljs-title function_">join</span>(renderedOutput, renderer.<span class="hljs-title function_">filePath</span>(fspath));
+<span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">mkdir</span>(path.<span class="hljs-title function_">dirname</span>(renderTo), { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`RENDER <span class="hljs-subst">${fspath}</span> ==&gt; <span class="hljs-subst">${renderTo}</span>`</span>);
+<span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">writeFile</span>(renderTo, rendered, <span class="hljs-string">&#x27;utf-8&#x27;</span>);
+</code></pre>
+<p>In this example <code class="hljs"><span class="hljs-attribute">fspath</span></code> is a file system path which can be read to get the content.  The variable <code class="hljs"><span class="hljs-attribute">renderedOutput</span></code> is a file system path for the directory into which website content is rendered.</p>
+<p>If no Renderer is found, then your application can consider this to be a file that requires no processing, and should be copied to the output directory.</p>
+<p>Otherwise a <code class="hljs"><span class="hljs-attribute">context</span></code> is created, <code class="hljs"><span class="hljs-attribute">parseMetadata</span></code> called, and then the content is rendered.  Afterward an output file name, <code class="hljs"><span class="hljs-attribute">renderTo</span></code> is constructed, and the rendered content is written to that file.</p>
+<h2>Rendering content into a layout template</h2>
+<p>It is convenient to design a template for the page structure used on your site.  You can then take any rendered output, render it into the template, and your website will have a consistent page structure.</p>
+<p>The package is designed to support two template directories:  <code class="hljs"><span class="hljs-attribute">partials</span></code> and <code class="hljs"><span class="hljs-attribute">layouts</span></code>.  For each you can have multiple directories, so that your project can bring together templates from multiple sources.  This was discussed <a href="configuration.html">in the configuration section</a>.</p>
+<p>A simple way to specify the layout template is with a <code class="hljs"><span class="hljs-attribute">layout</span></code> field in the frontmatter, as shown in the example above.</p>
+<p>In the GuideCMS example code, you will find this function for rendering pages with a layout template:</p>
+<pre><code class="hljs language-js">
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">render</span>(<span class="hljs-params">info</span>) {
+
+    <span class="hljs-comment">// Read file content</span>
+    <span class="hljs-comment">// Find the renderer</span>
+    <span class="hljs-comment">// Ask the renderer to parse metadata</span>
+    <span class="hljs-comment">// render content</span>
+    <span class="hljs-comment">// If the metadata includes a layout</span>
+    <span class="hljs-comment">//     read the layout file</span>
+    <span class="hljs-comment">//     duplicate the previous metadata</span>
+    <span class="hljs-comment">//     add rendered content to new metadata</span>
+    <span class="hljs-comment">//     render</span>
+    <span class="hljs-comment">// Write rendered content to a file </span>
+    <span class="hljs-comment">// whose name is computed from input file</span>
+
+    <span class="hljs-keyword">const</span> renderer = renderers.<span class="hljs-title function_">findRendererPath</span>(info.<span class="hljs-property">vpath</span>);
+    <span class="hljs-keyword">if</span> (!renderer) {
+        <span class="hljs-keyword">const</span> copyTo = path.<span class="hljs-title function_">join</span>(renderedOutput, info.<span class="hljs-property">vpath</span>);
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`COPY <span class="hljs-subst">${info.vpath}</span> to <span class="hljs-subst">${copyTo}</span>`</span>);
+        <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">mkdir</span>(path.<span class="hljs-title function_">dirname</span>(copyTo), { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+        <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">copyFile</span>(info.<span class="hljs-property">fspath</span>, copyTo);
+        <span class="hljs-keyword">return</span>;
+    }
+    <span class="hljs-keyword">let</span> context = {
+        <span class="hljs-attr">fspath</span>: info.<span class="hljs-property">fspath</span>,
+        <span class="hljs-attr">content</span>: <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">readFile</span>(info.<span class="hljs-property">fspath</span>, <span class="hljs-string">&#x27;utf-8&#x27;</span>)
+    };
+    context = renderer.<span class="hljs-title function_">parseMetadata</span>(context);
+    <span class="hljs-keyword">if</span> (context.<span class="hljs-property">metadata</span>) {
+        context.<span class="hljs-property">metadata</span> = <span class="hljs-title function_">copyMetadataProperties</span>(context.<span class="hljs-property">metadata</span>, metadata);
+    }
+    <span class="hljs-comment">// console.log(`vpath ${info.vpath}`, context);</span>
+    <span class="hljs-keyword">let</span> rendered;
+    <span class="hljs-keyword">try</span> {
+        rendered = <span class="hljs-keyword">await</span> renderer.<span class="hljs-title function_">render</span>(context);
+    } <span class="hljs-keyword">catch</span> (err) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`Failed to render <span class="hljs-subst">${info.vpath}</span> because <span class="hljs-subst">${err}</span>`</span>);
+    }
+
+    <span class="hljs-comment">// console.log(`rendered`, rendered);</span>
+
+    <span class="hljs-keyword">let</span> layoutRendered;
+    <span class="hljs-keyword">if</span> (!context.<span class="hljs-property">metadata</span> || !context.<span class="hljs-property">metadata</span>.<span class="hljs-property">layout</span>) {
+        layoutRendered = rendered;
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">const</span> layoutFN = <span class="hljs-keyword">await</span> renderers.<span class="hljs-title function_">findLayout</span>(context.<span class="hljs-property">metadata</span>.<span class="hljs-property">layout</span>);
+        <span class="hljs-keyword">let</span> layoutContext = {
+            <span class="hljs-attr">fspath</span>: layoutFN,
+            <span class="hljs-attr">content</span>: <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">readFile</span>(layoutFN, <span class="hljs-string">&#x27;utf-8&#x27;</span>),
+            <span class="hljs-attr">metadata</span>: <span class="hljs-title function_">copyMetadataProperties</span>({}, context.<span class="hljs-property">metadata</span>)
+        };
+        layoutContext.<span class="hljs-property">metadata</span> = <span class="hljs-title function_">copyMetadataProperties</span>(
+            layoutContext.<span class="hljs-property">metadata</span>, metadata
+        );
+        <span class="hljs-keyword">delete</span> layoutContext.<span class="hljs-property">metadata</span>.<span class="hljs-property">layout</span>;
+        layoutContext.<span class="hljs-property">metadata</span>.<span class="hljs-property">content</span> = rendered;
+        <span class="hljs-keyword">const</span> layoutRenderer = renderers.<span class="hljs-title function_">findRendererPath</span>(layoutFN);
+        <span class="hljs-comment">// console.log(`layout context `, layoutContext);</span>
+        <span class="hljs-keyword">try</span> {
+            layoutRendered = <span class="hljs-keyword">await</span> layoutRenderer.<span class="hljs-title function_">render</span>(layoutContext);
+        } <span class="hljs-keyword">catch</span> (err) {
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`Failed to render <span class="hljs-subst">${layoutFN}</span> with <span class="hljs-subst">${info.vpath}</span> because <span class="hljs-subst">${err}</span>`</span>);
+        }
+    }
+    
+    <span class="hljs-keyword">const</span> renderTo = path.<span class="hljs-title function_">join</span>(renderedOutput, renderer.<span class="hljs-title function_">filePath</span>(info.<span class="hljs-property">vpath</span>));
+    <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">mkdir</span>(path.<span class="hljs-title function_">dirname</span>(renderTo), { <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> });
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`RENDER <span class="hljs-subst">${info.vpath}</span> ==&gt; <span class="hljs-subst">${renderTo}</span>`</span>);
+    <span class="hljs-keyword">await</span> fsp.<span class="hljs-title function_">writeFile</span>(renderTo, layoutRendered, <span class="hljs-string">&#x27;utf-8&#x27;</span>);
+}
+</code></pre>
+<p>The <code class="hljs"><span class="hljs-attribute">info</span></code> object contains several fields describing the file.  The <code class="hljs"><span class="hljs-attribute">vpath</span></code> field is a virtual pathname that is not guaranteed to refer to a file on the filesystem.  The <code class="hljs"><span class="hljs-attribute">fspath</span></code> field is a concrete pathname, that is guaranteed to refer to an actual file.</p>
+<p>The code is largely the same as what was shown earlier for simple rendering.  There is an added section if <code class="hljs"><span class="hljs-built_in">context</span>.metadata</code> contains <code class="hljs">context.metadata.<span class="hljs-keyword">layout</span></code>.  That field is taken to be the filename of a layout template.</p>
+<p>Layout templates are found using the <code class="hljs"><span class="hljs-attribute">findLayout</span></code> method.  This method searches the layout directories for a matching template.</p>
+<p>The <code class="hljs"><span class="hljs-attribute">copyMetadataProperties</span></code> supports the possibility of a global metadata object.  Your project might want some metadata to be available on every page.  This function makes a duplicate of an existing object, then applies whatever fields are in the second object.</p>
+<p>For the layout template rendering, the code first duplicates the data in <code class="hljs"><span class="hljs-built_in">context</span>.metadata</code>.  It then applies the data in the global metadata object.  It then removes any <code class="hljs"><span class="hljs-attribute">layout</span></code> object in the resulting object.  Finally, <code class="hljs">layoutContext<span class="hljs-selector-class">.metadata</span>.<span class="hljs-attribute">content</span></code> is assigned from the <code class="hljs"><span class="hljs-attribute">rendered</span></code> data from the first stage.  That means the template should incorporate this <code class="hljs"><span class="hljs-attribute">content</span></code> value wherever the rendered content should appear.</p>
+<p>This is an abbreviated version of the <code class="hljs"><span class="hljs-keyword">page</span>.html.njk</code> layout template that was used for rendering this page you're reading.  By its file extension the template is in Nunjucks format:</p>
+<pre><code class="hljs language-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>{{ title | escape }}<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+        {% for style in stylesheets %}
+        <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text/css&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;{{ style | escape }}&quot;</span>/&gt;</span>
+        {% endfor %}
+        {% for js in jshead %}
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;{{ js | escape }}&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        {% endfor %}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">head</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container-fluid&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>{{ title | escape }}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container-md&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;row&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">article</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col&quot;</span>&gt;</span>
+                    {{ content }}
+                <span class="hljs-tag">&lt;/<span class="hljs-name">article</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">section</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-2&quot;</span>&gt;</span>
+                    <span class="hljs-comment">&lt;!-- Navigation sidebar goes here --&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">section</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        {% for js in jsbottom %}
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;{{ js | escape }}&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        {% endfor %}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>In this case the global metadata is expected to contain three arrays, <code class="hljs"><span class="hljs-attribute">stylesheets</span></code>, <code class="hljs"><span class="hljs-attribute">jshead</span></code> and <code class="hljs"><span class="hljs-attribute">jsbottom</span></code>.  These contain URLs or pathnames for CSS or JavaScript files that you wish to be included in the HTML of your website.  Also, this example uses Bootstrap v5 classes to handle layout.</p>
+
+                </article>
+                <section class="col-2">
+                    <div class="btn-group-vertical" role="group" 
+                            aria-label="Vertical button group">
+                        <a href="/index.html" class="btn btn-primary">Overview</a>
+                        <a href="/setup.html" class="btn btn-primary">Getting Started</a>
+                        <a href="/rendering.html" class="btn btn-primary">Rendering</a>
+                        <a href="/renderers.html" class="btn btn-primary">Renderers</a>
+                        <a href="/configuration.html" class="btn btn-primary">Configuration</a>
+                        <a href="/configuring-markdown.html" class="btn btn-primary">Configuring Markdown</a>
+                        <a href="/guidecms.html" class="btn btn-primary">GuideCMS</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+        
+        <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
+        
+
+        <script>
+            try {
+                hljs.initHighlightingOnLoad();
+            } catch (err) { }
+        </script>
+    </body>
+</html>

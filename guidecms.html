@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>GuideCMS - the example static website generator</title>
+        
+        <link rel="stylesheet" type="text/css" href="/style.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css"/>
+        
+        
+    </head>
+    <body>
+        <head class="container-fluid">
+        <h1>GuideCMS - the example static website generator</h1>
+        </head>
+        <div class="container-md">
+            <div class="row">
+                <article class="col">
+                    <p>This documentation website is built using GuideCMS, a dirt simple static website generator built using <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code> and <code class="hljs">@akashacms/<span class="hljs-keyword">stacked</span>-dirs</code>.  This tool was created to serve three purposes:</p>
+<ul>
+<li>Rendering the <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code> documentation</li>
+<li>Providing real-world testing of <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code></li>
+<li>Show a working example of using <code class="hljs"><span class="hljs-meta">@akashacms</span>/renderers</code></li>
+</ul>
+<p>If you really want to use GuideCMS the first steps would be to</p>
+<ol>
+<li>Create a project directory - using <code class="hljs"><span class="hljs-built_in">npm</span> init -y</code></li>
+<li>Copy GuideCMS source files from <a href="https://github.com/akashacms/rendering-engines/tree/main/guidecms">https://github.com/akashacms/rendering-engines/tree/main/guidecms</a></li>
+<li>Study the Guide sources at <a href="https://github.com/akashacms/rendering-engines/tree/main/guide">https://github.com/akashacms/rendering-engines/tree/main/guide</a></li>
+</ol>
+<p>Steps after setting up the project directory is:</p>
+<ol>
+<li>Create a <code class="hljs"><span class="hljs-attribute">documents</span></code> directory, and write documents</li>
+<li>Create a <code class="hljs"><span class="hljs-attribute">layouts</span></code> directory, adding at least one page layout</li>
+<li>If you need partials templates, add a <code class="hljs"><span class="hljs-attribute">partials</span></code> directory</li>
+<li>Create a configuration file</li>
+<li>The <code class="hljs"><span class="hljs-attribute">build</span></code> and <code class="hljs"><span class="hljs-attribute">watch</span></code> scripts in the <code class="hljs"><span class="hljs-attribute">guide</span></code> directory show how to render the website, and how to write page content while enjoying live preview</li>
+</ol>
+<p>The result is a directory, <code class="hljs"><span class="hljs-keyword">out</span></code>, containing the HTML/JS/CSS for a website.  You can upload this to any public webserver.  Using the <code class="hljs"><span class="hljs-attribute">gh-pages</span></code> package in the NPM repository, the website can easily be published to Github Pages.</p>
+<p>A complete blog post describing GuideCMS is at: <a href="https://akashacms.com/news/2022/09/renderers-package.html.md">https://akashacms.com/news/2022/09/renderers-package.html.md</a></p>
+
+                </article>
+                <section class="col-2">
+                    <div class="btn-group-vertical" role="group" 
+                            aria-label="Vertical button group">
+                        <a href="/index.html" class="btn btn-primary">Overview</a>
+                        <a href="/setup.html" class="btn btn-primary">Getting Started</a>
+                        <a href="/rendering.html" class="btn btn-primary">Rendering</a>
+                        <a href="/renderers.html" class="btn btn-primary">Renderers</a>
+                        <a href="/configuration.html" class="btn btn-primary">Configuration</a>
+                        <a href="/configuring-markdown.html" class="btn btn-primary">Configuring Markdown</a>
+                        <a href="/guidecms.html" class="btn btn-primary">GuideCMS</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+        
+        <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
+        
+
+        <script>
+            try {
+                hljs.initHighlightingOnLoad();
+            } catch (err) { }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Confuring Markdown</title>
+        
+        <link rel="stylesheet" type="text/css" href="/style.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.css"/>
+        
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css"/>
+        
+        
+    </head>
+    <body>
+        <head class="container-fluid">
+        <h1>Confuring Markdown</h1>
+        </head>
+        <div class="container-md">
+            <div class="row">
+                <article class="col">
+                    <p>The Renderers package uses <a href="https://www.npmjs.com/package/markdown-it">markdown-it</a>, a CommonMark-compliant package for rendering Markdown to HTML.  It is a solid and capable Markdown package, that is also highly configurable, and supports a range of plugins.</p>
+<p>The MarkdownRenderer class gives us access to configure the Markdown-IT package, and to install plugins.</p>
+<p>In GuideCMS you will find this block of code:</p>
+<pre><code class="hljs language-js"><span class="hljs-keyword">import</span> { createRequire } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;node:module&#x27;</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-built_in">require</span> = <span class="hljs-title function_">createRequire</span>(<span class="hljs-keyword">import</span>.<span class="hljs-property">meta</span>.<span class="hljs-property">url</span>);
+...
+
+<span class="hljs-keyword">const</span> rendererMarkdown = renderers.<span class="hljs-title function_">findRendererName</span>(<span class="hljs-string">&#x27;.html.md&#x27;</span>);
+
+rendererMarkdown.<span class="hljs-title function_">configuration</span>({
+    <span class="hljs-attr">html</span>:         <span class="hljs-literal">true</span>,    <span class="hljs-comment">// Enable html tags in source</span>
+    <span class="hljs-attr">xhtmlOut</span>:     <span class="hljs-literal">false</span>,   <span class="hljs-comment">// Use &#x27;/&#x27; to close single tags (&lt;br /&gt;)</span>
+    <span class="hljs-attr">breaks</span>:       <span class="hljs-literal">false</span>,   <span class="hljs-comment">// Convert &#x27;\n&#x27; in paragraphs into &lt;br&gt;</span>
+    <span class="hljs-attr">linkify</span>:      <span class="hljs-literal">true</span>,    <span class="hljs-comment">// Autoconvert url-like texts to links</span>
+    <span class="hljs-attr">typographer</span>:  <span class="hljs-literal">false</span>,   <span class="hljs-comment">// Enable smartypants and other sweet transforms</span>
+})
+.<span class="hljs-title function_">use</span>(<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;markdown-it-highlightjs&#x27;</span>), { <span class="hljs-attr">auto</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">code</span>: <span class="hljs-literal">true</span> })
+.<span class="hljs-title function_">use</span>(<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;markdown-it-expand-tabs&#x27;</span>), { <span class="hljs-attr">tabWidth</span>: <span class="hljs-number">4</span> });
+</code></pre>
+<p>First, we use the Node.js API to create a version of the <code class="hljs"><span class="hljs-built_in">require</span></code> function that works within the ES6 context.  We need this because Markdown-IT plugins are loaded as CommonJS packages.</p>
+<p>Next, we use <code class="hljs"><span class="hljs-attribute">findRendererName</span></code> to retrieve the MarkdownRenderer instance.  To the <code class="hljs"><span class="hljs-attribute">configuration</span></code> method we pass a Markdown-IT configuration object.</p>
+<p>The <code class="hljs">.<span class="hljs-keyword">use</span></code> method lets us install Markdown-IT plugins.  The first parameter is the package, loaded using <code class="hljs"><span class="hljs-built_in">require</span></code>, and the second parameter is the options object for the plugin.   The <code class="hljs"><span class="hljs-attribute">createRequire</span></code> function configures the package lookup to be sourced from the filesystem location of <code class="hljs">guidecms.mjs</code>.  This is because of passing <code class="hljs"><span class="hljs-keyword">import</span>.meta.url</code> to the <code class="hljs"><span class="hljs-attribute">createRequire</span></code> function.</p>
+<p>The plugins used are <a href="https://www.npmjs.com/package/markdown-it-highlightjs">markdown-it-highlightjs</a>, which integrates the Highlight.JS package to do syntax highlighting.  The second, <a href="https://www.npmjs.com/package/markdown-it-expand-tabs">markdown-it-expand-tabs</a>, does some things with leading spaces in code blocks.</p>
+<p>In the <code class="hljs"><span class="hljs-attribute">guidecms</span></code> directory we ran these commands:</p>
+<pre><code class="hljs">$ npm install markdown-<span class="hljs-keyword">it</span>-highlightjs <span class="hljs-comment">--save</span>
+$ npm install markdown-<span class="hljs-keyword">it</span>-expand-tabs <span class="hljs-comment">--save</span>
+</code></pre>
+<p>This installs the two plugins in the correct location to be found by the GuideCMS code.</p>
+<p>Next we need to make a couple changes to the configuration file, to load the CSS and JavaScript related to Highlight.JS.  It used to be that the required files were included in the <code class="hljs"><span class="hljs-keyword">highlight</span>.js</code> package on NPM, but that is no longer the case.  What we can do instead is to borrow some code from the Highlight.JS website, and download the CSS/JS files from their CDN.</p>
+<p>For the configuration file used in GuideCMS, we can add this to the metadata:</p>
+<pre><code class="hljs language-yaml">
+<span class="hljs-attr">metadata:</span>
+    <span class="hljs-attr">stylesheets:</span>
+        <span class="hljs-string">...</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-string">https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css</span>
+    <span class="hljs-attr">jsbottom:</span>
+        <span class="hljs-string">...</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-string">https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js</span>
+</code></pre>
+<p>This will be picked up by <code class="hljs"><span class="hljs-keyword">page</span>.html.njk</code> and cause the correct <code class="hljs"><span class="hljs-section">&lt;link&gt;</span></code> and <code class="hljs"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span></code> tags to be generated.  Another tag is required in the HTML to run the browser-side JavaScript:</p>
+<pre><code class="hljs language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript">
+    <span class="hljs-keyword">try</span> {
+        hljs.<span class="hljs-title function_">initHighlightingOnLoad</span>();
+    } <span class="hljs-keyword">catch</span> (err) { }
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p>These steps result in two things.  First, Markdown-IT rendering on the server will include HTML classes for syntax highlighting.  Next, on the browser side the required code to make the syntax highlighting visible is executed.</p>
+
+                </article>
+                <section class="col-2">
+                    <div class="btn-group-vertical" role="group" 
+                            aria-label="Vertical button group">
+                        <a href="/index.html" class="btn btn-primary">Overview</a>
+                        <a href="/setup.html" class="btn btn-primary">Getting Started</a>
+                        <a href="/rendering.html" class="btn btn-primary">Rendering</a>
+                        <a href="/renderers.html" class="btn btn-primary">Renderers</a>
+                        <a href="/configuration.html" class="btn btn-primary">Configuration</a>
+                        <a href="/configuring-markdown.html" class="btn btn-primary">Configuring Markdown</a>
+                        <a href="/guidecms.html" class="btn btn-primary">GuideCMS</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <script src="/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+        
+        <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
+        
+
+        <script>
+            try {
+                hljs.initHighlightingOnLoad();
+            } catch (err) { }
+        </script>
+    </body>
+</html>
