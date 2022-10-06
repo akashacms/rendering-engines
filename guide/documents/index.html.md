@@ -4,7 +4,6 @@ layout: page.html.njk
 date: September 28, 2022
 ---
 
-
 The package `@akashacms/renderers` consolidates several packages for rendering files used for publishing websites.  The package supports a simple API for content rendering, and it interfaces with the API of each supported package.
 
 This package was created to support [AkashaRender](https://github.com/akashacms/akasharender), the main component of AkashaCMS.  But, it was designed to support being used by any other application.
@@ -69,3 +68,4 @@ The repository contains files for this website.  The website is rendered by Guid
 
 * https://github.com/akashacms/rendering-engines/tree/main/guide
 * https://github.com/akashacms/rendering-engines/tree/main/guidecms
+

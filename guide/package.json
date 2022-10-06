@@ -6,7 +6,10 @@
     "watch": "npm-run-all --parallel watcher preview",
     "preview": "live-server out",
     "watcher": "node ../guidecms/guidecms.mjs cfg.yml",
-    "build": "node ../guidecms/guidecms.mjs cfg-batch.yml",
+    "build": "npm-run-all build:site build:api",
+    "build:site": "node ../guidecms/guidecms.mjs cfg-batch.yml",
+    "build:api": "npx typedoc --plugin typedoc-plugin-extras --options typedoc.json ../lib/index.ts",
+    "watch:api": "npx typedoc --watch --plugin typedoc-plugin-extras --options typedoc.json ../lib/index.ts",
     "publish": "npx gh-pages -d out"
   },
   "keywords": [],
@@ -18,6 +21,8 @@
     "npm-run-all": "^4.1.5"
   },
   "dependencies": {
-    "bootstrap": "^5.2.1"
+    "bootstrap": "^5.2.1",
+    "typedoc": "^0.23.15",
+    "typedoc-plugin-extras": "^2.3.0"
   }
 }

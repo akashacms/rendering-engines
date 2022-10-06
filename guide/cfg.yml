@@ -6,6 +6,8 @@ dirs:
           mountPoint: /
         - mounted: node_modules/bootstrap/dist
           mountPoint: /vendor/bootstrap
+        # - mounted: api-site
+        #   mountPoint: /api
     output: ./out
     layout: ./layouts
     partial: ./partials

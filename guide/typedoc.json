@@ -1,0 +1,10 @@
+{
+    "customTitle": "akashacms.github.io/rendering-engines/api",
+    "customTitleLink": "https://akashacms.github.io/rendering-engines/api/index.html",
+    "name": "Consolidated template rendering engines in Node.js",
+    "includeVersion": true,
+    "hideGenerator": true,
+    "categorizeByGroup": false,
+    "readme": "README-api.md",
+    "out": "out/api"
+}
