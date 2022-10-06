@@ -123,6 +123,13 @@ async function render(info) {
     context = renderer.parseMetadata(context);
     if (context.metadata) {
         context.metadata = copyMetadataProperties(context.metadata, metadata);
+        context.metadata.partial = async (fname, metadata) => {
+            return renderers.partial(fname, metadata);
+        };
+        context.metadata.partialSync = (fname, metadata) => {
+            console.log(`partialSync ${renderers.partialSync} ${fname}`);
+            return renderers.partialSync(fname, metadata);
+        };
     }
     // console.log(`vpath ${info.vpath}`, context);
     let rendered;
