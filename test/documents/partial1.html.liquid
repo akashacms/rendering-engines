@@ -1,0 +1,29 @@
+---
+title: Partial test for Liquid
+layout: foo.html.ejs
+---
+
+<h1>{{ title }}</h1>
+
+<!--
+    LiquidJS doesn't seem to support calling a function
+    that is included in the "globals".  Hence, the
+    partial and partialSync functions do not seem callable.
+
+    The render tag in LiquidJS does a similar thing.
+    It can render a simple .html
+    It can render a .liquid file, and variables
+    can be passed
+
+    But it would be unable to render a partial implemented
+    with a different template format.
+-->
+
+<span class="hello-world">
+{% render 'hello-world.html' %}
+</span>
+
+<span class="partial-body">
+{% render 'partial-body.html.liquid', partialBody: 'PARTIAL BODY' %}
+</span>
+

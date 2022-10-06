@@ -1,0 +1,16 @@
+---
+title: Partial test for Nunjucks
+layout: foo.html.ejs
+---
+
+<h1>{{ title }}</h1>
+
+<span class="hello-world">
+{{ partialSync('hello-world.html') }}
+</span>
+
+<span class="partial-body">
+{{ partialSync('partial-body.html.ejs', {
+    partialBody: 'PARTIAL BODY'
+}) }}
+</span>
