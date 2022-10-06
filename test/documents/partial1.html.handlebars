@@ -1,0 +1,55 @@
+---
+title: Partial test for Handlebars
+layout: foo.html.ejs
+---
+
+<h1>{{ title }}</h1>
+
+<!--
+    Handlebars doesn't seem to support calling a function
+    that is included in the "globals".  Hence, the
+    partial and partialSync functions do not seem callable.
+
+    There is a syntax in Handlebars for partials, but it
+    is useless because the partials have to be preregistered.
+
+    Instead, the Renderer implements a helper, #partialSync,
+    that calls the partialSync function.
+-->
+
+<p>Test Case 1: Can it incorporate an HTML template?  In 
+the helper function, such templates are simply copied into
+place rather than rendered.</p>
+
+{{#partialSync template='hello-world.html'}}{{/partialSync}}
+
+<p>Test Case 2: Can it renderSync a template where a value
+is passed, and is the value expressed properly</p>
+
+{{#partialSync template="showmessage.html.njk" message="See this message"}}
+{{/partialSync}}
+
+<p>Test Case 3: Can partialSync be invoked as a non-block helper</p>
+
+{{partialSync template="showmessage.html.njk" message="non-block helper"}}
+
+<p>Test Case 4: Is the body of a partialSync helper passed
+correctly as the partialBody value</p>
+
+{{#partialSync template='partial-body.html.njk'}}
+PARTIAL BODY
+{{/partialSync}}
+
+<p>Test Case 5: Support for nesting a partialSync as the
+body of another partialSync</p>
+
+{{#partialSync template='partial-body.html.njk'}}
+Before nested message {{#partialSync template="showmessage.html.njk" message="NESTED MESSAGE"}}
+{{/partialSync}}
+{{/partialSync}}
+
+<p>Test Case 6: Does an invoked partial receive values
+    from the document metadata.</p>
+
+{{partialSync template='showtitle.html.ejs'}}
+

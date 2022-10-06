@@ -895,6 +895,27 @@ describe('Handlebars', function() {
     //
     // Further the {{> partial}} syntax is useless since
     // one has to jump so many hoops to register a partial.
+
+
+    it('should render partial templates', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.html.handlebars', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<span id="message">See this message<\/span>/);
+        assert.match(rendered, /<span id="message">non-block helper<\/span>/);
+        assert.match(rendered, /PARTIAL BODY/);
+        assert.match(rendered, /<strong id="strong">Before nested message <span id="message">NESTED MESSAGE<\/span>/);
+        assert.match(rendered, /<span id="title">Partial test for Handlebars<\/span>/);
+    });
+
 });
 
 describe('LESS', function() {
