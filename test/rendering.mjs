@@ -30,6 +30,16 @@ async function doRender(fn, metadata) {
     for (const yprop in metadata) {
         rc.metadata[yprop] = metadata[yprop];
     }
+
+    rc.metadata.partial = async (fname, metadata) => {
+        return config.partial(fname, metadata);
+    };
+    rc.metadata.partialSync = (fname, metadata) => {
+        // console.log(`partialSync ${fname}`);
+        const ret = config.partialSync(fname, metadata);
+        // console.log(`partialSync ${fname} ==> ${ret}`);
+        return ret;
+    };
     return await renderer.render(rc);
 }
 
@@ -44,6 +54,15 @@ function doRenderSync(fn, metadata) {
     for (const yprop in metadata) {
         rc.metadata[yprop] = metadata[yprop];
     }
+    rc.metadata.partial = async (fname, metadata) => {
+        throw new Error(`partial ${fname} not allowed in sync context`);
+    };
+    rc.metadata.partialSync = (fname, metadata) => {
+        // console.log(`partialSync ${fname}`);
+        const ret = config.partialSync(fname, metadata);
+        // console.log(`partialSync ${fname} ==> ${ret}`);
+        return ret;
+    };
     return renderer.renderSync(rc);
 }
 
@@ -408,6 +427,21 @@ describe('EJS', function() {
 
     });
 
+    it('should render partial templates', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.html.ejs', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<strong id="strong">PARTIAL BODY<\/strong>/);
+    });
+
 });
 
 describe('Liquid', function() {
@@ -538,6 +572,35 @@ describe('Liquid', function() {
         assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
         assert.doesNotMatch(rendered, /hello: world/);
 
+    });
+
+    it('should render partial templates', async function() {
+
+        /*
+    LiquidJS doesn't seem to support calling a function
+    that is included in the "globals".  Hence, the
+    partial and partialSync functions do not seem callable.
+
+    The render tag in LiquidJS does a similar thing.
+    It can render a simple .html
+    It can render a .liquid file, and variables
+    can be passed
+
+    But it would be unable to render a partial implemented
+    with a different template format.
+        */
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.html.liquid', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<strong id="strong">PARTIAL BODY<\/strong>/);
     });
 
 });
@@ -673,6 +736,21 @@ describe('Nunjucks', function() {
         assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
         assert.doesNotMatch(rendered, /hello: world/);
 
+    });
+
+    it('should render partial templates', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.html.njk', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<strong id="strong">PARTIAL BODY<\/strong>/);
     });
 
 });
@@ -811,6 +889,12 @@ describe('Handlebars', function() {
 
     });
 
+    // In Handlebars, it seems that functions cannot be
+    // called therefore the Renderers partial functions
+    // cannot be used.
+    //
+    // Further the {{> partial}} syntax is useless since
+    // one has to jump so many hoops to register a partial.
 });
 
 describe('LESS', function() {
