@@ -144,8 +144,8 @@ export class Configuration {
      * Add an absolute pathname for a directory to find partial templates.
      * @param dir 
      */
-    @ValidateParams
-    addPartialDir(@IsAbsolutePath() dir: string): void {
+    // @ValidateParams
+    addPartialDir(/* @IsAbsolutePath() */ dir: string): void {
         this.#partialDirs.push(dir);
     }
 
@@ -191,8 +191,8 @@ export class Configuration {
      * Add an absolute pathname for a directory to find layout templates.
      * @param dir 
      */
-    @ValidateParams
-    addLayoutDir(@IsAbsolutePath() dir: string): void {
+    // @ValidateParams
+    addLayoutDir(/* @IsAbsolutePath() */ dir: string): void {
         this.#layoutDirs.push(dir);
     }
 
@@ -219,10 +219,22 @@ export class Configuration {
         }
     }
 
+    /**
+     * Find a layout template, supporting asynchronous execution
+     * 
+     * @param fnlayout 
+     * @returns 
+     */
     async findLayout(fnlayout: string): Promise<string> {
         return this.#finderLayout(fnlayout);
     }
 
+    /**
+     * Find a layout template, supporting synchronous execution
+     * 
+     * @param fnlayout 
+     * @returns 
+     */
     findLayoutSync(fnlayout: string): string {
         return this.#finderLayoutSync(fnlayout);
     }
@@ -316,7 +328,7 @@ export class Configuration {
     @ValidateParams
     async partial(
         @IsString() fname: string,
-        @IsObject() metadata: any) {
+        /* @IsObject() */ metadata: any) {
         
         return this.#partial(fname, metadata);
     }
@@ -324,7 +336,7 @@ export class Configuration {
     @ValidateParams
     partialSync(
         @IsString() fname: string,
-        @IsObject() metadata: any) {
+        /* @IsObject() */ metadata: any) {
         
         return this.#partialSync(fname, metadata);
     }
@@ -523,7 +535,7 @@ function defaultPartialSync(fname: string, metadata: any) {
     const renderer = this.findRendererPath(fname);
     if (!renderer) {
         if (fname.endsWith('.html') || fname.endsWith('.xhtml')) {
-            return fsp.readFile(found, 'utf-8');
+            return fs.readFileSync(found, 'utf-8');
         } else {
             throw new Error(`defaultPartial no Renderer found for ${fname}`);
         }
