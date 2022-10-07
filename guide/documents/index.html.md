@@ -68,4 +68,3 @@ The repository contains files for this website.  The website is rendered by Guid
 
 * https://github.com/akashacms/rendering-engines/tree/main/guide
 * https://github.com/akashacms/rendering-engines/tree/main/guidecms
-

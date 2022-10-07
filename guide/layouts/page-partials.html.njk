@@ -3,12 +3,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ title | escape }}</title>
-        {% for style in stylesheets %}
-        <link rel="stylesheet" type="text/css" href="{{ style | escape }}"/>
-        {% endfor %}
-        {% for js in jshead %}
-        <script src="{{ js | escape }}"></script>
-        {% endfor %}
+        {{ partialSync('stylesheets.html.njk', {
+            stylesheets: stylesheets
+        }) }}
+        {{ partialSync('jshead.html.njk', {
+            jshead: jshead
+        }) }}
     </head>
     <body>
         <head class="container-fluid">
@@ -28,14 +28,7 @@
 
         {% include 'footer.html' %}
         
-        {% for js in jsbottom %}
-        <script src="{{ js | escape }}"></script>
-        {% endfor %}
-
-        <script>
-            try {
-                hljs.initHighlightingOnLoad();
-            } catch (err) { }
-        </script>
+        {% include 'jsbottom.njk' %}
+        {% include 'hljs-init.html' %}
     </body>
 </html>

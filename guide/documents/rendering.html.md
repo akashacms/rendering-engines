@@ -257,7 +257,3 @@ This is an abbreviated version of the `page.html.njk` layout template that was u
 ```
 
 In this case the global metadata is expected to contain three arrays, `stylesheets`, `jshead` and `jsbottom`.  These contain URLs or pathnames for CSS or JavaScript files that you wish to be included in the HTML of your website.  Also, this example uses Bootstrap v5 classes to handle layout.
-
-
-
-
