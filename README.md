@@ -8,6 +8,12 @@ The purpose is to present a harmonized interface to any package whose purpose is
 * CSS rendering using LESS
 * Document rendering using Markdown or AsciiDoctor
 
+Links:
+
+* Home page: https://akashacms.github.io/rendering-engines/index.html
+* NPM: https://www.npmjs.com/package/@akashacms/renderers
+* Introduction: https://akashacms.com/news/2022/09/renderers-package.html
+
 ## Installation
 
 ```

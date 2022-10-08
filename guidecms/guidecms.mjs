@@ -127,7 +127,7 @@ async function render(info) {
             return renderers.partial(fname, metadata);
         };
         context.metadata.partialSync = (fname, metadata) => {
-            console.log(`partialSync ${renderers.partialSync} ${fname}`);
+            // console.log(`partialSync ${renderers.partialSync} ${fname}`);
             return renderers.partialSync(fname, metadata);
         };
     }

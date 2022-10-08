@@ -31,7 +31,7 @@ Supported rendering engines are:
     </tr>
     <tr>
         <td>LESS</td>
-        <td><code>.less.css</code></td>
+        <td><code>.css.less</code></td>
         <td>Supports compiling LESS files to CSS</td>
     </tr>
     <tr>
