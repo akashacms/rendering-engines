@@ -127,6 +127,7 @@ Name | Extension | Description
 -----|-----------|------------
 AsciiDoc | `.html.adoc` | Supports AsciiDoctor documents
 Markdown | `.html.md`   | Supports Markdown documents
+Markdoc  | `.html.markdoc` | Supports Markdoc documents
 LESS     | `.css.less`  | Supports compiling LESS files to CSS
 EJS      | `.html.ejs`  | EJS
 Handlebars | `.html.handlebars` | Handlebars
