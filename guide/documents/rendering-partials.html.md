@@ -197,6 +197,11 @@ The Nunjucks engine supports calling an application-specified function.  It does
 }) }}
 ```
 
+### Partials and the Markdoc engine
+
+The Markdoc engine has its own concept of _partials_ that is very different from the Renderers package.  In Markdoc a _partial_ is contained in the configuration object rather than read from the filesystem.
+
+Their documentation suggests it is possible to override the `partial` tag implementation.  In theory this could connect with the Renderers system for partials.  It would only support synchronous partials.  It was attempted to do so, but abandoned because the Markdoc documentation did not make it clear what to do.
 
 ## Simplifying the page layout template shown at the top
 

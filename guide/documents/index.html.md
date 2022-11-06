@@ -30,6 +30,11 @@ Supported rendering engines are:
         <td>Supports Markdown documents</td>
     </tr>
     <tr>
+        <td>Markdoc</td>
+        <td><code>.html.markdoc</code></td>
+        <td>Supports Markdoc documents</td>
+    </tr>
+    <tr>
         <td>LESS</td>
         <td><code>.css.less</code></td>
         <td>Supports compiling LESS files to CSS</td>

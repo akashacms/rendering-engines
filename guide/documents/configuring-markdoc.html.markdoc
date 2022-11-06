@@ -1,0 +1,45 @@
+---
+title: Using and Confuring Markdoc
+layout: page.html.njk
+---
+
+While the Renderers supports [Markdown rendering using Markdown-it](configuring-markdown.html), it also supports Markdown rendering using Markdoc.  Markdoc is a superset to Markdown that supports tags and variables and other things.
+
+For information about Markdow, see: https://markdoc.dev/
+
+To use Markdoc simply create a file with the extension `.html.markdoc`.  You can use Markdown syntax, as well as the tags and variables features described on the website.  We only support YAML frontmatter -- the Markdoc documentation suggests it is possible to use other frontmatter formats like TOML.  In Renderers, only the YAML frontmatter is configured.
+
+Another limitation is the `{% partial .. %}` tag.  This tag should be integrated with the _partials_ support baked into Renderers.  Indeed, we started to do so, but ran into enough issues to abandon that effort.  This means the _partial_ tag works exactly as Markdoc suggests, meaning you add items to the Markdoc configuration object.
+
+Out of the box the Markdoc renderer does not use a Markdoc configuration object, except as required for passing data from `context.metadata` as Markdoc variables.
+
+Because `context.metadata` appears as variables, you can do something like:
+
+```md
+---
+title: Spiffy wonderful title
+---
+
+# {% $title %} {% #overview %}
+
+Content body
+```
+
+This will generate an `<h1>` with the given title, and it will have an `id` value of `overview`.
+
+You may want to supply a Markdoc configuration object.
+
+```js
+const rendererMarkdoc = renderers.findRendererName('.html.markdoc');
+
+rendererMarkdoc.configuration({
+    // Markdoc configuration object
+});
+```
+
+The object you pass will be used verbatim except that the `variables` field will be replaced by the contents of `context.metadata`.
+
+FWIW this page is rendered using the Markdoc renderer.  As proof, here is the title: _{% $title %}_ and the page layout template: _{% $layout %}_.
+
+You'll notice the code snippets above were not syntax colored, while on other pages of the Renderers guide they are.  Those pages are rendered using Markdown-it, along with an extension for syntax highlighting in `<code>` sections.  This extension is not available for Markdoc.
+

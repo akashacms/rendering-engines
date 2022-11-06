@@ -31,6 +31,7 @@ import { HandlebarsRenderer } from './render-handlebars';
 import { JSONRenderer } from './render-json';
 import { LiquidRenderer } from './render-liquid';
 import { MarkdownRenderer } from './render-md';
+import { MarkdocRenderer } from './render-markdoc';
 import { NunjucksRenderer } from './render-nunjucks';
 
 export { Renderer, parseFrontmatter } from './Renderer';
@@ -297,6 +298,7 @@ export class Configuration {
         // Register built-in renderers
         this.registerRenderer(new MarkdownRenderer());
         this.registerRenderer(new AsciidocRenderer());
+        this.registerRenderer(new MarkdocRenderer());
         this.registerRenderer(new EJSRenderer());
         this.registerRenderer(new LiquidRenderer());
         this.registerRenderer(new NunjucksRenderer());
@@ -505,9 +507,8 @@ async function defaultPartial(fname: string, metadata: any) {
         // duplicates the metadata object, then sets the
         // config field in the duplicate, passing that to the partial.
         let mdata = {};
-        let prop;
 
-        for (prop in metadata) {
+        for (let prop in metadata) {
             mdata[prop] = metadata[prop];
         }
         // TODO

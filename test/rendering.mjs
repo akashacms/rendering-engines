@@ -186,6 +186,43 @@ describe('Markdown', function() {
 
 });
 
+
+describe('Markdoc', function() {
+
+    it('should render Markdoc markdoc-test.html.markdoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('markdoc-test.html.markdoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
+        assert.match(rendered, /.*.pre.how are you.*/);
+        assert.match(rendered, /h1 id..overview..Markdoc test/);
+        assert.match(rendered, /li.If True/);
+    });
+
+    it('should render Sync Markdown markdoc-test.html.markdoc', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('markdoc-test.html.markdoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
+        assert.match(rendered, /.*.pre.how are you.*/);
+        assert.match(rendered, /h1 id..overview..Markdoc test/);
+        assert.match(rendered, /li.If True/);
+    });
+});
+
+
 describe('AsciiDoctor', function() {
 
     it('should render AsciiDoctor asciidoctor-test.html.adoc', async function() {

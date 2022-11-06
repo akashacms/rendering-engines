@@ -72,21 +72,19 @@ export class MarkdownRenderer extends Renderer {
   
     async render(context: RenderingContext): Promise<string> {
         // console.log('MarkdownRenderer render');
-        return new Promise((resolve, reject) => {
-            try {
-                // console.log(`Markdown render `, context);
-                const rendered = (md.render(
-                    typeof context.body === 'string' ? context.body : context.content
-                ));
-                // console.log(rendered);
-                resolve(rendered);
-            } catch(e) {
-                const docpath = context.fspath ? context.fspath : "unknown";
-                const err = new Error(`Error with Markdown in file ${docpath} because ${e}`);
-                err.cause = e;
-                reject(err);
-            }
-        });
+        try {
+            // console.log(`Markdown render `, context);
+            const rendered = (md.render(
+                typeof context.body === 'string' ? context.body : context.content
+            ));
+            // console.log(rendered);
+            return rendered;
+        } catch(e) {
+            const docpath = context.fspath ? context.fspath : "unknown";
+            const err = new Error(`Error with Markdown in file ${docpath} because ${e}`);
+            err.cause = e;
+            throw err;
+        }
     }
 
     /**

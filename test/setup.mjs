@@ -49,7 +49,8 @@ describe('Setup', function() {
         // console.log(config.renderers.map(r => r.name));
         assert.deepEqual(config.renderers.map(r => r.name), [
             '.html.md',
-            '.html.adoc',
+            '.html.adoc', 
+            '.html.markdoc',
             '.html.ejs',
             '.html.liquid',
             '.html.njk',
