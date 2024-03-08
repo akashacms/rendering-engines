@@ -35,16 +35,16 @@
     "typescript": "^4.8.2"
   },
   "dependencies": {
-    "@asciidoctor/core": "^2.2.6",
-    "@markdoc/markdoc": "^0.2.1",
-    "ejs": "^3.1.8",
+    "@asciidoctor/core": "^3.0.x",
+    "@markdoc/markdoc": "^0.4.x",
+    "ejs": "^3.1.x",
     "gray-matter": "^4.0.3",
-    "handlebars": "^4.7.7",
-    "less": "^4.1.3",
+    "handlebars": "^4.7.x",
+    "less": "^4.2.x",
     "liquid": "^5.1.1",
-    "mahabhuta": "^0.8.3",
-    "markdown-it": "^13.0.1",
-    "nunjucks": "^3.2.3",
+    "mahabhuta": "^0.8.4",
+    "markdown-it": "^14.0.x",
+    "nunjucks": "^3.2.x",
     "react": "^18.2.0",
     "runtime-data-validation": "^0.2.2"
   }

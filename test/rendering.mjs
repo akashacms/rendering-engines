@@ -198,7 +198,7 @@ describe('Markdoc', function() {
             rendered = undefined;
         }
         assert.ok(rendered);
-        // console.log(rendered);
+        console.log(rendered);
         assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
         assert.match(rendered, /.*.pre.how are you.*/);
         assert.match(rendered, /h1 id..overview..Markdoc test/);

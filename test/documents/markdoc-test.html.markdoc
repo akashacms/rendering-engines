@@ -14,6 +14,8 @@ These are tests of a couple Markdoc tags so we know that Markdoc is processing t
 * If False
 {% /if %}
 
+<span id="hello-world">Hello World!</span>
+
 The stuff below is from the standard Markdown test suite.
 
 ``` js
