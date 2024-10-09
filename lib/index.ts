@@ -36,6 +36,16 @@ import { NunjucksRenderer } from './render-nunjucks';
 
 export { Renderer, parseFrontmatter } from './Renderer';
 
+export { AsciidocRenderer } from './render-asciidoc';
+export { CSSLESSRenderer } from './render-cssless';
+export { EJSRenderer } from './render-ejs';
+export { HandlebarsRenderer } from './render-handlebars';
+export { JSONRenderer } from './render-json';
+export { LiquidRenderer } from './render-liquid';
+export { MarkdownRenderer } from './render-md';
+export { MarkdocRenderer } from './render-markdoc';
+export { NunjucksRenderer } from './render-nunjucks';
+
 import {
     IsIntRange, IsInt, IsFloatRange, IsFloat,
     generateValidationDecorator,
@@ -278,14 +288,16 @@ export class Configuration {
         this.#renderers.unshift(renderer);
     }
 
-    findRendererName(name: string): Renderer {
+    @ValidateParams
+    findRendererName(@IsString() name: string): Renderer {
         for (var r of this.#renderers) {
             if (r.name === name) return r;
         }
         return undefined;
     }
 
-    findRendererPath(_path: string): Renderer {
+    @ValidateParams
+    findRendererPath(@IsString() _path: string): Renderer {
         // log(`findRendererPath ${_path}`);
         for (var r of this.#renderers) {
             if (r.match(_path)) return r;
@@ -310,7 +322,8 @@ export class Configuration {
     /**
      * Find a Renderer by its extension.
      */
-    findRenderer(name: string): Renderer {
+    @ValidateParams
+    findRenderer(@IsString() name: string): Renderer {
         return this.findRendererName(name);
     }
 

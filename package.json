@@ -1,6 +1,6 @@
 {
   "name": "@akashacms/renderers",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "description": "Consolidated support for multiple website content rendering tools in Node.js",
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",

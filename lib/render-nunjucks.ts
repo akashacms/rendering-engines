@@ -17,7 +17,8 @@
  *  limitations under the License.
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
+import util from 'node:util';
 import { Renderer, parseFrontmatter } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index.js';
 
@@ -61,13 +62,33 @@ export class NunjucksRenderer extends Renderer {
         return this[_nunjuck_env];
     }
 
-    async render(context: RenderingContext) {
+    async render(context: RenderingContext): Promise<string> {
         try {
             // console.log(context);
             let env = this.njkenv();
-            return env.renderString(
-                typeof context.body === 'string' ? context.body : context.content,
-                context.metadata);
+            // Do asynchronous rendering
+            let result = await new Promise<string>((resolve, reject) => {
+                env.renderString(
+                    typeof context.body === 'string' ? context.body : context.content,
+                    context.metadata,
+                    function(err, result) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            if (typeof result === 'string') {
+                                resolve(result);
+                            } else if (typeof result === 'undefined'
+                                           || result === null
+                            ) {
+                                resolve('');
+                            } else {
+                                reject(new Error(`rendering result unknown format ${util.inspect(result)}`));
+                            }
+                        }
+                    }
+                );
+            });
+            return result;
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
         } catch(e) {
