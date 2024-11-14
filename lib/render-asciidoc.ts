@@ -71,8 +71,12 @@ export class AsciidocRenderer extends Renderer {
             }
         }
         // console.log(`convert ${util.inspect(options)}`);
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`AsciiDOC convert no context.body or context.content supplied for rendering`);
+        }
         const ret = asciidoctor.convert(
-            typeof context.body === 'string' ? context.body : context.content,
+            toRender,
             options);
         if (ret instanceof Document) {
             throw new Error(`convert gave us a Document for ${context.fspath}`);

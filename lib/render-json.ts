@@ -30,8 +30,11 @@ export class JSONRenderer extends Renderer {
     renderSync(context: RenderingContext) {
         // console.log(`JSONRenderer renderSync ${text} ==> ${util.inspect(json)}`);
         // console.log(`JSONRenderer renderSync JSONFormatter ${metadata.JSONFormatter}`);
+        const text = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof text !== 'string') {
+            throw new Error(`JSON renderSync no context.body or context.content supplied for rendering`);
+        }
         try {
-            const text = typeof context.body === 'string' ? context.body : context.content;
             let json = JSON.parse(text);
             return this.config.partialSync(context.metadata.JSONFormatter,
                                { data: json });
@@ -45,8 +48,11 @@ export class JSONRenderer extends Renderer {
     }
 
     async render(context: RenderingContext) {
+        const text = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof text !== 'string') {
+            throw new Error(`JSON render no context.body or context.content supplied for rendering`);
+        }
         try {
-            const text = typeof context.body === 'string' ? context.body : context.content;
             let json = JSON.parse(text);
             // console.log(`JSONRenderer ${text} ==> ${util.inspect(json)}`);
             // console.log(`JSONRenderer JSONFormatter ${metadata.JSONFormatter}`);

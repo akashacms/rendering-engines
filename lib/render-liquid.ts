@@ -29,6 +29,10 @@ export class LiquidRenderer extends Renderer {
     }
 
     async render(context: RenderingContext): Promise<string> {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`Liquid render no context.body or context.content supplied for rendering`);
+        }
         try {
             const partialsMounted = this.partialDirs;
             const engine    = new Liquid({
@@ -36,7 +40,7 @@ export class LiquidRenderer extends Renderer {
                 extname: '.liquid'
             });
             return await engine.parseAndRender(
-                typeof context.body === 'string' ? context.body : context.content,
+                toRender,
                 context.metadata);
         } catch(e) {
             const docpath = context.fspath ? context.fspath : "unknown";

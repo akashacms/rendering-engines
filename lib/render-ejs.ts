@@ -68,10 +68,14 @@ export class EJSRenderer extends Renderer {
 
     renderSync(context: RenderingContext) {
         let opts = this.getEJSOptions(context.fspath ? context.fspath : undefined);
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`EJS renderSync no context.body or context.content supplied for rendering`);
+        }
         // console.log(`render  ${text} ${metadata} ${opts}`);
         try {
             return ejs.render(
-                typeof context.body === 'string' ? context.body : context.content,
+                toRender,
                 context.metadata, opts);
         } catch (e) {
             const docpath = context.fspath ? context.fspath : "unknown";
@@ -85,13 +89,17 @@ export class EJSRenderer extends Renderer {
     }
 
     async render(context: RenderingContext): Promise<string> {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`EJS render no context.body or context.content supplied for rendering`);
+        }
         /* return Promise.resolve(ejs.render(text, metadata)); */
         return new Promise((resolve, reject) => {
             try {
                 let opts = this.getEJSOptions(context.fspath ? context.fspath : undefined);
                 // console.log(`render async ${context.content} ${context.metadata} ${opts}`);
                 resolve(ejs.render(
-                    typeof context.body === 'string' ? context.body : context.content,
+                    toRender,
                     context.metadata, opts));
                 // const { template, opts } = this.compiledTemplate(text, vpinfo);
                 // resolve(template(metadata, opts));

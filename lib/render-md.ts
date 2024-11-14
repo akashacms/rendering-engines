@@ -55,10 +55,14 @@ export class MarkdownRenderer extends Renderer {
   
     renderSync(context: RenderingContext): string {
         // console.log('MarkdownRenderer renderSync '+ text);
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`MD renderSync no context.body or context.content supplied for rendering`);
+        }
         try {
             // console.log(`Markdown renderSync `, context);
             const ret = md.render(
-                typeof context.body === 'string' ? context.body : context.content
+                toRender
             );
             // console.log(ret);
             return ret;
@@ -72,10 +76,14 @@ export class MarkdownRenderer extends Renderer {
   
     async render(context: RenderingContext): Promise<string> {
         // console.log('MarkdownRenderer render');
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`MD render no context.body or context.content supplied for rendering`);
+        }
         try {
             // console.log(`Markdown render `, context);
             const rendered = (md.render(
-                typeof context.body === 'string' ? context.body : context.content
+                toRender
             ));
             // console.log(rendered);
             return rendered;

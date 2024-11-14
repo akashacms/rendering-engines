@@ -118,8 +118,12 @@ class PartialFile {
 
 const renderMarkdoc = (context, config) => {
     // console.log(context.metadata);
+    const toRender = typeof context.body === 'string' ? context.body : context.content;
+    if (typeof toRender !== 'string') {
+        throw new Error(`MarkDoc render no context.body or context.content supplied for rendering`);
+    }
     const ast = Markdoc.parse(
-        typeof context.body === 'string' ? context.body : context.content
+        toRender
     );
     // For Markdoc, the config.variables field must have
     // the "variables" to use.  In Renderers, this is the metadata.

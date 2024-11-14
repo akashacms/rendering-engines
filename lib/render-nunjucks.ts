@@ -63,13 +63,17 @@ export class NunjucksRenderer extends Renderer {
     }
 
     async render(context: RenderingContext): Promise<string> {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`NJK render no context.body or context.content supplied for rendering`);
+        }
         try {
             // console.log(context);
             let env = this.njkenv();
             // Do asynchronous rendering
             let result = await new Promise<string>((resolve, reject) => {
                 env.renderString(
-                    typeof context.body === 'string' ? context.body : context.content,
+                    toRender,
                     context.metadata,
                     function(err, result) {
                         if (err) {
@@ -100,11 +104,15 @@ export class NunjucksRenderer extends Renderer {
     }
 
     renderSync(context: RenderingContext) {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`NJK renderSync no context.body or context.content supplied for rendering`);
+        }
         try {
             // console.log(context);
             let env = this.njkenv();
             return env.renderString(
-                typeof context.body === 'string' ? context.body : context.content,
+                toRender,
                 context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);

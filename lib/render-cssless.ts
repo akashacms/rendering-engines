@@ -39,8 +39,12 @@ export class CSSLESSRenderer extends Renderer {
     }
 
     async render(context: RenderingContext): Promise<string> {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`CSSLESS render no context.body or context.content supplied for rendering`);
+        }
         return new Promise((resolve, reject) => {
-            less.render(context.content, function (err, css: lessOutput) {
+            less.render(toRender, function (err, css: lessOutput) {
                 if (err) reject(err);
                 else     resolve(css.css);
             });

@@ -114,9 +114,13 @@ export class HandlebarsRenderer extends Renderer {
     }
 
     async render(context: RenderingContext): Promise<string> {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`Handlebars render no context.body or context.content supplied for rendering`);
+        }
         try {
             const template = Handlebars.compile(
-                typeof context.body === 'string' ? context.body : context.content
+                toRender
             );
             return template(context.metadata);
         } catch(e) { 
@@ -127,9 +131,13 @@ export class HandlebarsRenderer extends Renderer {
     }
 
     renderSync(context: RenderingContext) {
+        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        if (typeof toRender !== 'string') {
+            throw new Error(`Handlebars renderSync no context.body or context.content supplied for rendering`);
+        }
         try {
             const template = Handlebars.compile(
-                typeof context.body === 'string' ? context.body : context.content
+                toRender
             );
             return template(context.metadata);
         } catch(e) { 
