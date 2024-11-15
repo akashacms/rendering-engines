@@ -23,17 +23,22 @@ import { Renderer, parseFrontmatter } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index.js';
 
 import * as nunjucks from 'nunjucks';
+import {
+    FileSystemAsyncLoader
+} from 'nunjucks-async-loader';
 
-const _nunjuck_env = Symbol('id');
 
 export class NunjucksRenderer extends Renderer {
+
+    #env;
+
     constructor() {
         super(".html.njk", /^(.*\.html)\.(njk)$/);
-        this[_nunjuck_env] = undefined;
+        this.#env = undefined;
     }
 
     njkenv() {
-        if (this[_nunjuck_env]) return this[_nunjuck_env];
+        if (this.#env) return this.#env;
         // console.log(`njkenv layoutDirs ${util.inspect(config.layoutDirs)}`);
         // Detect if config is not set
         // In the Rendering module, config is stored in superclass
@@ -50,20 +55,35 @@ export class NunjucksRenderer extends Renderer {
         // class to integrate Nunjucks better with FileCache.  Clearly
         // Nunjucks can handle files being updated behind the scene.
 
-        this[_nunjuck_env] = new nunjucks.Environment(
+        // this.#env = new nunjucks.Environment(
+        //     // Using watch=true requires installing chokidar
+        //     new nunjucks.FileSystemLoader(loadFrom, { watch: false }),
+        //     {
+        //         autoescape: false,
+        //         noCache: false
+        //     }
+        // );
+
+
+        // https://www.npmjs.com/package/nunjucks-async-loader
+        this.#env = new nunjucks.Environment(
             // Using watch=true requires installing chokidar
-            new nunjucks.FileSystemLoader(loadFrom, { watch: false }),
+            new FileSystemAsyncLoader(loadFrom, { watch: false }),
             {
                 autoescape: false,
                 noCache: false
             }
         );
+
         // console.log(`njkenv`, this[_nunjuck_env]);
-        return this[_nunjuck_env];
+        return this.#env;
     }
 
     async render(context: RenderingContext): Promise<string> {
-        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        const toRender
+            = typeof context.body === 'string'
+            ? context.body
+            : context.content;
         if (typeof toRender !== 'string') {
             throw new Error(`NJK render no context.body or context.content supplied for rendering`);
         }
@@ -74,7 +94,9 @@ export class NunjucksRenderer extends Renderer {
             let result = await new Promise<string>((resolve, reject) => {
                 env.renderString(
                     toRender,
-                    context.metadata,
+                    !context?.metadata
+                        ? {}
+                        : context.metadata,
                     function(err, result) {
                         if (err) {
                             reject(err);
@@ -104,7 +126,10 @@ export class NunjucksRenderer extends Renderer {
     }
 
     renderSync(context: RenderingContext) {
-        const toRender = typeof context.body === 'string' ? context.body : context.content;
+        const toRender
+            = typeof context.body === 'string'
+            ? context.body
+            : context.content;
         if (typeof toRender !== 'string') {
             throw new Error(`NJK renderSync no context.body or context.content supplied for rendering`);
         }
@@ -113,7 +138,9 @@ export class NunjucksRenderer extends Renderer {
             let env = this.njkenv();
             return env.renderString(
                 toRender,
-                context.metadata);
+                !context?.metadata
+                    ? {}
+                    : context.metadata);
             // nunjucks.configure({ autoescape: false });
             // return nunjucks.renderString(text, metadata);
         } catch(e) {
