@@ -23,9 +23,6 @@ import { Renderer, parseFrontmatter } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index.js';
 
 import * as nunjucks from 'nunjucks';
-import {
-    FileSystemAsyncLoader
-} from 'nunjucks-async-loader';
 
 
 export class NunjucksRenderer extends Renderer {
@@ -55,21 +52,11 @@ export class NunjucksRenderer extends Renderer {
         // class to integrate Nunjucks better with FileCache.  Clearly
         // Nunjucks can handle files being updated behind the scene.
 
-        // this.#env = new nunjucks.Environment(
-        //     // Using watch=true requires installing chokidar
-        //     new nunjucks.FileSystemLoader(loadFrom, { watch: false }),
-        //     {
-        //         autoescape: false,
-        //         noCache: false
-        //     }
-        // );
-
-
-        // https://www.npmjs.com/package/nunjucks-async-loader
         this.#env = new nunjucks.Environment(
             // Using watch=true requires installing chokidar
-            new FileSystemAsyncLoader(loadFrom, { watch: false }),
-            {
+            new nunjucks.FileSystemLoader(loadFrom, {
+                watch: false
+            }), {
                 autoescape: false,
                 noCache: false
             }

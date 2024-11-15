@@ -1,6 +1,6 @@
 {
   "name": "@akashacms/renderers",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Consolidated support for multiple website content rendering tools in Node.js",
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",
@@ -45,7 +45,6 @@
     "mahabhuta": "^0.8.4",
     "markdown-it": "^14.0.x",
     "nunjucks": "^3.2.x",
-    "nunjucks-async-loader": "^2.1.3",
     "react": "^18.2.0",
     "runtime-data-validation": "^0.2.2"
   }
