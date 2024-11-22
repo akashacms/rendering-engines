@@ -18,12 +18,12 @@
  */
 
 import * as path from 'node:path';
+import fs, { promises as fsp } from 'node:fs';
 import util from 'node:util';
 import { Renderer, parseFrontmatter } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index.js';
 
 import * as nunjucks from 'nunjucks';
-
 
 export class NunjucksRenderer extends Renderer {
 
@@ -34,35 +34,110 @@ export class NunjucksRenderer extends Renderer {
         this.#env = undefined;
     }
 
+    /**
+     * Looks for a template in the concatenation
+     * of layoutDirs and partialDirs, returning
+     * the concatenation of the matching directory
+     * with the file name.
+     *
+     * The purpose is to support a Nunjucks Loader which
+     * dynamically use the current list of directories
+     * when/if they're updated.
+     *
+     * @param fnlayout 
+     * @returns 
+     */
+    #lookForTemplateSync(fnlayout: string) {
+        const loadFrom = this.layoutDirs.concat(
+            this.partialDirs
+        );
+        for (const ldir of loadFrom) {
+            const lpath = path.join(ldir, fnlayout);
+            let lstat;
+            try {
+                lstat = fs.statSync(lpath);
+            } catch (err) { lstat = undefined; }
+            if (lstat) {
+                if (lstat.isFile()) {
+                    return lpath;
+                }
+            }
+        }
+    }
+
     njkenv() {
+        // If the environment was already created,
+        // then do not create a new one.
         if (this.#env) return this.#env;
-        // console.log(`njkenv layoutDirs ${util.inspect(config.layoutDirs)}`);
-        // Detect if config is not set
-        // In the Rendering module, config is stored in superclass
-        // if (!config) throw new Error(`render-nunjucks no config`);
+        
+        // Using nunjucks.FileSystemLoader, as shown
+        // below, did not work out.  The issue is if/when
+        // the list of directories (Layouts+Partials) changes,
+        // there isn't a way to update the directories in
+        // the FileSystemLoader.
+        //
+        // It's observed that njkenv was called before
+        // the AkashaRender Configuration.prepare function
+        // is invoked, hence the Built-In plugin was not
+        // added, and therefore it's layout and partials
+        // directories were not available.
+        //
+        // The Nunjucks documentation for adding a
+        // Loader is horrible and led me down false paths.
+        //
+        // This is the trivial Loader.  We do not need
+        // it to "watch" the directories (using Chokidar),
+        // and we do not need it to cache results.
+        //
+        // The action is in the getSource and
+        // #lookForTemplateSync functions.
+        //
+        // The latter looks through the directories
+        // in the concatenation of layoutsDirs and
+        // partialsDirs.  It recomputes this every time
+        // because the directory list may have changed.
+        //
+        // That function was modeled after defaultFindLayout
+        // and related functions in index.ts.
+        //
+        // Everything is using Sync functions so that it
+        // can be used from Sync rendering.
 
-        // Get the paths for both the Layouts and Partials directories,
-        // because with Nunjucks we are storing macros files in some
-        // layouts directories.
-        const loadFrom = this.layoutDirs.concat(this.partialDirs);
+        const that = this;
 
-        // console.log(`njkenv `, loadFrom);
-
-        // An open question is whether to create a custom Loader
-        // class to integrate Nunjucks better with FileCache.  Clearly
-        // Nunjucks can handle files being updated behind the scene.
+        function AkLoader(opts?: any) {}
+        AkLoader.prototype.getSource = function(name) {
+            // load the template
+            const lpath = that.#lookForTemplateSync(name);
+            const source = {
+                src: fs.readFileSync(lpath, 'utf-8'),
+                path: lpath,
+                noCache: this.noCache
+            };
+            return source;
+        }
 
         this.#env = new nunjucks.Environment(
-            // Using watch=true requires installing chokidar
-            new nunjucks.FileSystemLoader(loadFrom, {
-                watch: false
-            }), {
+            new AkLoader(),
+            {
                 autoescape: false,
-                noCache: false
+                watch: false,
+                noCache: true
             }
         );
 
-        // console.log(`njkenv`, this[_nunjuck_env]);
+        // This is the old implementation.  It almost worked.
+
+        // this.#env = new nunjucks.Environment(
+        //     // Using watch=true requires installing chokidar
+        //     new nunjucks.FileSystemLoader(loadFrom, {
+        //         watch: false
+        //     }), {
+        //         autoescape: false,
+        //         noCache: false
+        //     }
+        // );
+
         return this.#env;
     }
 

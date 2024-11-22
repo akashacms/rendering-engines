@@ -116,6 +116,7 @@ export class Configuration {
         if (params && params.partialDirs) this.#partialDirs = params.partialDirs;
         if (params && params.layoutDirs)  this.#layoutDirs  = params.layoutDirs;
 
+        // console.log(`Renderers Configuration constructor layoutDirs `, util.inspect(this.#layoutDirs));
         this.#finderPartial = (params && params.findPartial)
                     ? params.findPartial
                     : defaultFindPartial.bind(this);
