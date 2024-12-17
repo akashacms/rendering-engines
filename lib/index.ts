@@ -31,7 +31,7 @@ import { HandlebarsRenderer } from './render-handlebars';
 import { JSONRenderer } from './render-json';
 import { LiquidRenderer } from './render-liquid';
 import { MarkdownRenderer } from './render-md';
-import { MarkdocRenderer } from './render-markdoc';
+// import { MarkdocRenderer } from './render-markdoc';
 import { NunjucksRenderer } from './render-nunjucks';
 
 export { Renderer, parseFrontmatter } from './Renderer';
@@ -43,7 +43,7 @@ export { HandlebarsRenderer } from './render-handlebars';
 export { JSONRenderer } from './render-json';
 export { LiquidRenderer } from './render-liquid';
 export { MarkdownRenderer } from './render-md';
-export { MarkdocRenderer } from './render-markdoc';
+// export { MarkdocRenderer } from './render-markdoc';
 export { NunjucksRenderer } from './render-nunjucks';
 
 import {
@@ -301,7 +301,11 @@ export class Configuration {
     findRendererPath(@IsString() _path: string): Renderer {
         // log(`findRendererPath ${_path}`);
         for (var r of this.#renderers) {
-            if (r.match(_path)) return r;
+            // console.log(`findRendererPath ${_path} ${r.name}`)
+            if (r.match(_path)) {
+                // console.log('MATCH');
+                return r;
+            }
         }
         // console.log(`findRendererPath NO RENDERER for ${_path}`);
         return undefined;
@@ -311,7 +315,7 @@ export class Configuration {
         // Register built-in renderers
         this.registerRenderer(new MarkdownRenderer());
         this.registerRenderer(new AsciidocRenderer());
-        this.registerRenderer(new MarkdocRenderer());
+        // this.registerRenderer(new MarkdocRenderer());
         this.registerRenderer(new EJSRenderer());
         this.registerRenderer(new LiquidRenderer());
         this.registerRenderer(new NunjucksRenderer());
