@@ -18,9 +18,9 @@
  */
 
 
-import { promises as fsp } from 'fs';
-import * as fs from 'fs';
-import * as path from 'path';
+import { promises as fsp } from 'node:fs';
+import fs from 'node:fs';
+import path from 'node:path';
 import matter from 'gray-matter';
 
 import {
@@ -77,12 +77,59 @@ export class Renderer {
     	extension: matches[2]
     }; */
 
+
+    // Note that the preferred REGEX is now a dual thing
+    // that will either match .html.EXT or just .EXT.
+    // It means the matches array now has five entries
+    // numbered as so:
+    //
+    //    [0] -- The original file name
+    //      THESE TWO ARE FOR .html.EXT
+    //    [1] -- The file name missing the final extension
+    //           "file.html"
+    //    [2] -- The final extension
+    //      THESE TWO ARE FOR .EXT
+    //    [3] -- The file name missing the final extension
+    //           "file"
+    //    [4] -- The final extension
+    //
+    // ```
+    // > 'foo.adoc'.match( /^(.*\.html)\.(adoc)$|^(.*)\.(adoc)$/)
+    // [
+    // 'foo.adoc',
+    // undefined,
+    // undefined,
+    // 'foo',
+    // 'adoc',
+    // index: 0,
+    // input: 'foo.adoc',
+    // groups: undefined
+    // ]
+    // > 'foo.html.adoc'.match( /^(.*\.html)\.(adoc)$|^(.*)\.(adoc)$/)
+    // [
+    // 'foo.html.adoc',
+    // 'foo.html',
+    // 'adoc',
+    // undefined,
+    // undefined,
+    // index: 0,
+    // input: 'foo.html.adoc',
+    // groups: undefined
+    // ]
+    // ```
+
     /**
      * Compute the pathname which a given input file should
      * have after being rendered.
      * 
      * For example, an input file `example.html.md` would
      * have an output file name `example.html`.
+     *
+     * For `example.md` the renderTo extension is not
+     * available in the file name.  So long as
+     * the renderFormat result is the uppercase of
+     * the renderTo extension, then we can compute
+     * the correct extension to use.
      * 
      * @param fname 
      * @returns 
@@ -92,7 +139,16 @@ export class Renderer {
         var matches;
         for (var regex of this.regex) {
             if ((matches = fname.match(regex)) !== null) {
-                return matches[1];
+                // console.log(`filePath ${fname} `, matches);
+                return typeof matches[1] !== 'undefined'
+                    ? matches[1]
+                    // Substitute the renderFormat
+                    // for the desired extension
+                    : matches[3] +'.'+ this.renderFormat({
+                        fspath: fname,
+                        content: '',
+                        metadata: {}
+                    }).toLowerCase();
             }
         }
         return null;
@@ -124,7 +180,9 @@ export class Renderer {
         var matches;
         for (var regex of this.regex) {
             if ((matches = fname.match(regex)) !== null) {
-                return matches[2];
+                return typeof matches[2] !== 'undefined'
+                    ? matches[2]
+                    : matches[4];
             }
         }
         return null;

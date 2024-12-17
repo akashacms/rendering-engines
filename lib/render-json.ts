@@ -24,7 +24,7 @@ import { RenderingContext, RenderingFormat } from './index.js';
 
 export class JSONRenderer extends Renderer {
     constructor() {
-        super(".html.json", /^(.*\.html)\.(json)$/);
+        super(".html.json", /^(.*\.html)\.(json)$|^(.*)\.(json)$/);
     }
 
     renderSync(context: RenderingContext) {

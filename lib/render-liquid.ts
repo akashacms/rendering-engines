@@ -25,7 +25,7 @@ import { Liquid } from 'liquidjs';
 
 export class LiquidRenderer extends Renderer {
     constructor() {
-        super('.html.liquid', /^(.*\.html)\.(liquid)$/);
+        super('.html.liquid', /^(.*\.html)\.(liquid)$|^(.*)\.(liquid)$/);
     }
 
     async render(context: RenderingContext): Promise<string> {

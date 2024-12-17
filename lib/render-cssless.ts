@@ -31,7 +31,7 @@ type lessOutput = {
 
 export class CSSLESSRenderer extends Renderer {
     constructor() {
-        super(".css.less", /^(.*\.css)\.(less)$/);
+        super(".css.less", /^(.*\.css)\.(less)$|^(.*)\.(less)$/);
     }
 
     renderSync(context: RenderingContext): string {

@@ -39,10 +39,38 @@ describe('EJS', function() {
         assert.match(rendered, /.*Partial Body Text.*/);
     });
 
+    it('should render EJS partial-body.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('partial-body.ejs', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
     it('should render Sync EJS partial-body.html.ejs', function() {
         let rendered;
         try {
             rendered = config.partialSync('partial-body.html.ejs', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
+    it('should render Sync EJS partial-body.ejs', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('partial-body.ejs', {
                 partialBody: 'Partial Body Text'
             });
         } catch (e) {
@@ -69,10 +97,42 @@ describe('EJS', function() {
         assert.match(rendered, /.div.Hello, World..div./);
     });
 
+    it('should render EJS including.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('including.ejs', {
+                message: 'Hello, World',
+                includedStuff: 'This is included'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.span..p.This is included..p...span/);
+        assert.match(rendered, /.div.Hello, World..div./);
+    });
+
     it('should render Sync EJS including.html.ejs', function() {
         let rendered;
         try {
             rendered = config.partialSync('including.html.ejs', {
+                message: 'Hello, World',
+                includedStuff: 'This is included'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.span..p.This is included..p...span/);
+        assert.match(rendered, /.div.Hello, World..div./);
+    });
+
+    it('should render Sync EJS including.ejs', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('including.ejs', {
                 message: 'Hello, World',
                 includedStuff: 'This is included'
             });
@@ -103,6 +163,20 @@ describe('Liquid', function() {
         assert.match(rendered, /.*Partial Body Text.*/);
     });
 
+    it('should render Liquid partial-body.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('partial-body.liquid', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
     it('should FAIL TO render Sync Liquid partial-body.html.liquid', function() {
         let rendered;
         let caughtError = false;
@@ -118,10 +192,41 @@ describe('Liquid', function() {
         assert.ok(caughtError === true);
     });
 
+    it('should FAIL TO render Sync Liquid partial-body.liquid', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = config.partialSync('partial-body.liquid', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError === true);
+    });
+
     it('should render Liquid including.html.liquid', async function() {
         let rendered;
         try {
             rendered = await config.partial('including.html.liquid', {
+                message: 'Hello, World',
+                includedStuff: 'This is included'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.span..p.This is included..p...span/);
+        assert.match(rendered, /.div.Hello, World..div./);
+    });
+
+    it('should render Liquid including.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('including.liquid', {
                 message: 'Hello, World',
                 includedStuff: 'This is included'
             });
@@ -153,10 +258,38 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Partial Body Text.*/);
     });
 
+    it('should render Nunjucks partial-body.njk', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('partial-body.njk', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
     it('should render Sync Nunjucks partial-body.html.njk', function() {
         let rendered;
         try {
             rendered = config.partialSync('partial-body.html.njk', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
+    it('should render Sync Nunjucks partial-body.njk', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('partial-body.njk', {
                 partialBody: 'Partial Body Text'
             });
         } catch (e) {
@@ -183,10 +316,42 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.div.Hello, World..div./);
     });
 
+    it('should render Nunjucks including.njk', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('including.njk', {
+                message: 'Hello, World',
+                includedStuff: 'This is included'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.span..p.This is included..p...span/);
+        assert.match(rendered, /.div.Hello, World..div./);
+    });
+
     it('should render Sync Nunjucks including.html.njk', function() {
         let rendered;
         try {
             rendered = config.partialSync('including.html.njk', {
+                message: 'Hello, World',
+                includedStuff: 'This is included'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.span..p.This is included..p...span/);
+        assert.match(rendered, /.div.Hello, World..div./);
+    });
+
+    it('should render Sync Nunjucks including.njk', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('including.njk', {
                 message: 'Hello, World',
                 includedStuff: 'This is included'
             });
@@ -217,10 +382,38 @@ describe('Handlebars', function() {
         assert.match(rendered, /.*Partial Body Text.*/);
     });
 
+    it('should render Handlebars partial-body.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('partial-body.handlebars', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
     it('should render Sync Handlebars partial-body.html.handlebars', function() {
         let rendered;
         try {
             rendered = config.partialSync('partial-body.html.handlebars', {
+                partialBody: 'Partial Body Text'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Partial Body Text.*/);
+    });
+
+    it('should render Sync Handlebars partial-body.handlebars', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('partial-body.handlebars', {
                 partialBody: 'Partial Body Text'
             });
         } catch (e) {

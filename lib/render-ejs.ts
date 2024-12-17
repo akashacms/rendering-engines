@@ -27,7 +27,7 @@ import * as ejsutils from 'ejs/lib/utils.js';
 // TODO support .php.ejs
 export class EJSRenderer extends Renderer {
     constructor() {
-        super(".html.ejs", /^(.*\.html|.*\.php)\.(ejs)$/);
+        super(".html.ejs", /^(.*\.html|.*\.php)\.(ejs)$|^(.*)\.(ejs)$/);
     }
 
     // This was for an attempt to list the directories to search when

@@ -25,7 +25,7 @@ import * as Handlebars from 'handlebars';
 
 export class HandlebarsRenderer extends Renderer {
     constructor() {
-        super(".html.handlebars", /^(.*\.html)\.(handlebars)$/);
+        super(".html.handlebars", /^(.*\.html)\.(handlebars)$|^(.*)\.(handlebars)$/);
 
         const renderer = this;
         Handlebars.registerHelper("partialSync", function(context, options) {

@@ -31,7 +31,7 @@ const _renderer_doctype = Symbol('doctype');
 
 export class AsciidocRenderer extends Renderer {
     constructor() {
-        super(".html.adoc", /^(.*\.html)\.(adoc)$/);
+        super(".html.adoc", /^(.*\.html)\.(adoc)$|^(.*)\.(adoc)$/);
         this[_renderer_doctype] = 'article';
     }
 

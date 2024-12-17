@@ -39,7 +39,7 @@ var md;
 
 export class MarkdownRenderer extends Renderer {
     constructor() {
-        super(".html.md", /^(.*\.html)\.(md)$/);
+        super(".html.md", /^(.*\.html)\.(md)$|^(.*)\.(md)$/);
         md = mdit(mditConfig);
     }
   

@@ -30,7 +30,8 @@ export class NunjucksRenderer extends Renderer {
     #env;
 
     constructor() {
-        super(".html.njk", /^(.*\.html)\.(njk)$/);
+        // Match either .html.njk or .njk
+        super(".html.njk", /^(.*\.html)\.(njk)$|^(.*)\.(njk)$/);
         this.#env = undefined;
     }
 

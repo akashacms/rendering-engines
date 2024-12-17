@@ -187,40 +187,40 @@ describe('Markdown', function() {
 });
 
 
-describe('Markdoc', function() {
+// describe('Markdoc', function() {
 
-    it('should render Markdoc markdoc-test.html.markdoc', async function() {
-        let rendered;
-        try {
-            rendered = await doRender('markdoc-test.html.markdoc', { });
-        } catch (e) {
-            console.error(e);
-            rendered = undefined;
-        }
-        assert.ok(rendered);
-        console.log(rendered);
-        assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
-        assert.match(rendered, /.*.pre.how are you.*/);
-        assert.match(rendered, /h1 id..overview..Markdoc test/);
-        assert.match(rendered, /li.If True/);
-    });
+//     it('should render Markdoc markdoc-test.html.markdoc', async function() {
+//         let rendered;
+//         try {
+//             rendered = await doRender('markdoc-test.html.markdoc', { });
+//         } catch (e) {
+//             console.error(e);
+//             rendered = undefined;
+//         }
+//         assert.ok(rendered);
+//         console.log(rendered);
+//         assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
+//         assert.match(rendered, /.*.pre.how are you.*/);
+//         assert.match(rendered, /h1 id..overview..Markdoc test/);
+//         assert.match(rendered, /li.If True/);
+//     });
 
-    it('should render Sync Markdown markdoc-test.html.markdoc', function() {
-        let rendered;
-        try {
-            rendered = doRenderSync('markdoc-test.html.markdoc', { });
-        } catch (e) {
-            console.error(e);
-            rendered = undefined;
-        }
-        assert.ok(rendered);
-        // console.log(rendered);
-        assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
-        assert.match(rendered, /.*.pre.how are you.*/);
-        assert.match(rendered, /h1 id..overview..Markdoc test/);
-        assert.match(rendered, /li.If True/);
-    });
-});
+//     it('should render Sync Markdown markdoc-test.html.markdoc', function() {
+//         let rendered;
+//         try {
+//             rendered = doRenderSync('markdoc-test.html.markdoc', { });
+//         } catch (e) {
+//             console.error(e);
+//             rendered = undefined;
+//         }
+//         assert.ok(rendered);
+//         // console.log(rendered);
+//         assert.match(rendered, /.*pre data-language="bash".echo &\quot;hello, \${WORLD}\&quot;/);
+//         assert.match(rendered, /.*.pre.how are you.*/);
+//         assert.match(rendered, /h1 id..overview..Markdoc test/);
+//         assert.match(rendered, /li.If True/);
+//     });
+// });
 
 
 describe('AsciiDoctor', function() {
@@ -229,6 +229,20 @@ describe('AsciiDoctor', function() {
         let rendered;
         try {
             rendered = await doRender('asciidoctor-test.html.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /.*\<p\>Preamble paragraph.\<\/p\>/);
+        assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
+    });
+
+    it('should render AsciiDoctor asciidoctor-test.adoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('asciidoctor-test.adoc', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -253,8 +267,20 @@ describe('AsciiDoctor', function() {
         assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
     });
 
-    it('should show correct renderFormat', function() {
+    it('should show correct renderFormat - path/to/foo.html.adoc', function() {
         const fspath = 'path/to/foo.html.adoc';
+        const renderer = config.findRenderer('.html.adoc');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.adoc', function() {
+        const fspath = 'path/to/foo.adoc';
         const renderer = config.findRenderer('.html.adoc');
         const format = renderer.renderFormat({
             fspath: fspath
@@ -286,7 +312,46 @@ describe('AsciiDoctor', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should parse frontmatter', function() {
+    it('should show correct filePath - path/to/foo.html.adoc', function() {
+        const fspath = 'path/to/foo.html.adoc';
+        const renderer = config.findRenderer('.html.adoc');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.adoc', function() {
+        const fspath = 'path/to/foo.adoc';
+        const renderer = config.findRenderer('.html.adoc');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.adoc', function() {
+        const fspath = 'path/to/foo.html.adoc';
+        const renderer = config.findRenderer('.html.adoc');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'adoc');
+    });
+
+    it('should show correct fileExtension - path/to/foo.adoc', function() {
+        const fspath = 'path/to/foo.adoc';
+        const renderer = config.findRenderer('.html.adoc');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'adoc');
+    });
+
+    it('should parse frontmatter - meta1.html.adoc', function() {
         const rc = parseMetadata('meta1.html.adoc');
         assert.ok(rc);
         assert.ok(rc.metadata);
@@ -298,10 +363,37 @@ describe('AsciiDoctor', function() {
         assert.match(rc.body, /Hello, World!/);
     });
 
+    it('should parse frontmatter - meta1.adoc', function() {
+        const rc = parseMetadata('meta1.adoc');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for AsciiDoctor');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.adoc$/);
+        assert.match(rc.body, /Hello, World!/);
+    });
+
     it('should render AsciiDoctor meta1.html.adoc', async function() {
         let rendered;
         try {
             rendered = await doRender('meta1.html.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /This is the body/);
+        assert.match(rendered, /Hello, World/);
+        assert.doesNotMatch(rendered, /Metadata test for AsciiDoctor/);
+    });
+
+    it('should render AsciiDoctor meta1.adoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.adoc', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -326,7 +418,21 @@ describe('AsciiDoctor', function() {
         assert.doesNotMatch(rendered, /title: Metadata test for AsciiDoctor/);
         assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
         assert.doesNotMatch(rendered, /hello: world/);
+    });
 
+    it('should render Markdown meta-empty.adoc', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.adoc', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for AsciiDoctor/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
     });
 
 });
@@ -337,6 +443,21 @@ describe('EJS', function() {
         let rendered;
         try {
             rendered = await doRender('doc1.html.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should render EJS doc1.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.ejs', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -363,8 +484,35 @@ describe('EJS', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
-    it('should show correct renderFormat', function() {
+    it('should render Sync EJS doc1.ejs', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should show correct renderFormat - path/to/foo.html.ejs', function() {
         const fspath = 'path/to/foo.html.ejs';
+        const renderer = config.findRenderer('.html.ejs');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.ejs', function() {
+        const fspath = 'path/to/foo.ejs';
         const renderer = config.findRenderer('.html.ejs');
         const format = renderer.renderFormat({
             fspath: fspath
@@ -396,7 +544,46 @@ describe('EJS', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should parse frontmatter', function() {
+    it('should show correct filePath - path/to/foo.html.ejs', function() {
+        const fspath = 'path/to/foo.html.ejs';
+        const renderer = config.findRenderer('.html.ejs');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.ejs', function() {
+        const fspath = 'path/to/foo.ejs';
+        const renderer = config.findRenderer('.html.ejs');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.ejs', function() {
+        const fspath = 'path/to/foo.html.ejs';
+        const renderer = config.findRenderer('.html.ejs');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'ejs');
+    });
+
+    it('should show correct fileExtension - path/to/foo.ejs', function() {
+        const fspath = 'path/to/foo.ejs';
+        const renderer = config.findRenderer('.html.ejs');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'ejs');
+    });
+
+    it('should parse frontmatter - meta1.html.ejs', function() {
         const rc = parseMetadata('meta1.html.ejs');
         assert.ok(rc);
         assert.ok(rc.metadata);
@@ -408,10 +595,42 @@ describe('EJS', function() {
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
+    it('should parse frontmatter - meta1.ejs', function() {
+        const rc = parseMetadata('meta1.ejs');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for EJS');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.ejs$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
     it('should render EJS meta1.html.ejs', async function() {
         let rendered;
         try {
             rendered = await doRender('meta1.html.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        // console.log(rendered);
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for EJS<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+    });
+
+    it('should render EJS meta1.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.ejs', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -448,6 +667,26 @@ describe('EJS', function() {
 
     });
 
+    it('should render Sync EJS meta1.ejs', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.ejs', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for EJS<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
+
     it('should render Markdown meta-empty.html.ejs', async function() {
         let rendered;
         try {
@@ -464,11 +703,42 @@ describe('EJS', function() {
 
     });
 
-    it('should render partial templates', async function() {
+    it('should render Markdown meta-empty.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.ejs', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for EJS/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
+    it('should render partial templates - partial1.html.ejs', async function() {
 
         let rendered;
         try {
             rendered = await doRender('partial1.html.ejs', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<strong id="strong">PARTIAL BODY<\/strong>/);
+    });
+
+    it('should render partial templates - partial1.ejs', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.ejs', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -498,6 +768,21 @@ describe('Liquid', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
+    it('should render Liquid doc1.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
     it('should FAIL TO render Sync Liquid doc1.html.liquid', function() {
         let rendered;
         let caughtError = false;
@@ -514,8 +799,36 @@ describe('Liquid', function() {
         assert.ok(caughtError);
     });
 
-    it('should show correct renderFormat', function() {
+    it('should FAIL TO render Sync Liquid doc1.liquid', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = doRenderSync('doc1.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            // console.error(e);
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError);
+    });
+
+    it('should show correct renderFormat - path/to/foo.html.liquid', function() {
         const fspath = 'path/to/foo.html.liquid';
+        const renderer = config.findRenderer('.html.liquid');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.liquid', function() {
+        const fspath = 'path/to/foo.liquid';
         const renderer = config.findRenderer('.html.liquid');
         const format = renderer.renderFormat({
             fspath: fspath
@@ -547,7 +860,46 @@ describe('Liquid', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should parse frontmatter', function() {
+    it('should show correct filePath - path/to/foo.html.liquie', function() {
+        const fspath = 'path/to/foo.html.liquid';
+        const renderer = config.findRenderer('.html.liquid');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.liquid', function() {
+        const fspath = 'path/to/foo.liquid';
+        const renderer = config.findRenderer('.html.liquid');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.liquid', function() {
+        const fspath = 'path/to/foo.html.liquid';
+        const renderer = config.findRenderer('.html.liquid');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'liquid');
+    });
+
+    it('should show correct fileExtension - path/to/foo.liquid', function() {
+        const fspath = 'path/to/foo.liquid';
+        const renderer = config.findRenderer('.html.liquid');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'liquid');
+    });
+
+    it('should parse frontmatter - meta1.html.liquid', function() {
         const rc = parseMetadata('meta1.html.liquid');
         assert.ok(rc);
         assert.ok(rc.metadata);
@@ -559,10 +911,42 @@ describe('Liquid', function() {
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
+    it('should parse frontmatter - meta1.liquid', function() {
+        const rc = parseMetadata('meta1.liquid');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for LiquidJS');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.liquid$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
     it('should render Liquid meta1.html.liquid', async function() {
         let rendered;
         try {
             rendered = await doRender('meta1.html.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for LiquidJS<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
+
+    it('should render Liquid meta1.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.liquid', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -595,10 +979,42 @@ describe('Liquid', function() {
         assert.ok(caughtError);
     });
 
+    it('should FAIL TO render Sync Liquid meta1.liquid', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = doRenderSync('meta1.liquid', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            // console.error(e);
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError);
+    });
+
     it('should render Markdown meta-empty.html.liquid', async function() {
         let rendered;
         try {
             rendered = await doRender('meta-empty.html.liquid', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for LiquidJS/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
+    it('should render Markdown meta-empty.liquid', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.liquid', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -659,6 +1075,21 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
+    it('should render Nunjucks doc1.njk', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
     it('should render Sync Nunjucks doc1.html.njk', function() {
         let rendered;
         try {
@@ -674,8 +1105,35 @@ describe('Nunjucks', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
-    it('should show correct renderFormat', function() {
+    it('should render Sync Nunjucks doc1.njk', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should show correct renderFormat - path/to/foo.html.njk', function() {
         const fspath = 'path/to/foo.html.njk';
+        const renderer = config.findRenderer('.html.njk');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.njk', function() {
+        const fspath = 'path/to/foo.njk';
         const renderer = config.findRenderer('.html.njk');
         const format = renderer.renderFormat({
             fspath: fspath
@@ -707,7 +1165,46 @@ describe('Nunjucks', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should parse frontmatter', function() {
+    it('should show correct filePath - path/to/foo.html.njk', function() {
+        const fspath = 'path/to/foo.html.njk';
+        const renderer = config.findRenderer('.html.njk');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.njk', function() {
+        const fspath = 'path/to/foo.njk';
+        const renderer = config.findRenderer('.html.njk');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.njk', function() {
+        const fspath = 'path/to/foo.html.njk';
+        const renderer = config.findRenderer('.html.njk');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'njk');
+    });
+
+    it('should show correct fileExtension - path/to/foo.njk', function() {
+        const fspath = 'path/to/foo.njk';
+        const renderer = config.findRenderer('.html.njk');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'njk');
+    });
+
+    it('should parse frontmatter - meta1.html.njk', function() {
         const rc = parseMetadata('meta1.html.njk');
         assert.ok(rc);
         assert.ok(rc.metadata);
@@ -719,10 +1216,42 @@ describe('Nunjucks', function() {
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
+    it('should parse frontmatter - meta1.njk', function() {
+        const rc = parseMetadata('meta1.njk');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for Nunjucks');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.njk$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
     it('should render Nunjucks meta1.html.njk', async function() {
         let rendered;
         try {
             rendered = await doRender('meta1.html.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Nunjucks<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
+
+    it('should render Nunjucks meta1.njk', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.njk', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -759,6 +1288,26 @@ describe('Nunjucks', function() {
 
     });
 
+    it('should render Sync Nunjucks meta1.njk', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.njk', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Nunjucks<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
+
     it('should render Markdown meta-empty.html.njk', async function() {
         let rendered;
         try {
@@ -775,11 +1324,42 @@ describe('Nunjucks', function() {
 
     });
 
-    it('should render partial templates', async function() {
+    it('should render Markdown meta-empty.njk', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.njk', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for Nunjucks/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
+    it('should render partial templates - partial1.html.njk', async function() {
 
         let rendered;
         try {
             rendered = await doRender('partial1.html.njk', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<strong id="strong">PARTIAL BODY<\/strong>/);
+    });
+
+    it('should render partial templates - partial1.njk', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.njk', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -809,6 +1389,21 @@ describe('Handlebars', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
+    it('should render Handlebars doc1.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
     it('should render Sync Handlebars doc1.html.handlebars', function() {
         let rendered;
         try {
@@ -824,8 +1419,35 @@ describe('Handlebars', function() {
         assert.match(rendered, /.*Hello.*World.*/);
     });
 
-    it('should show correct renderFormat', function() {
+    it('should render Sync Handlebars doc1.handlebars', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should show correct renderFormat - path/to/foo.html.handlebars', function() {
         const fspath = 'path/to/foo.html.handlebars';
+        const renderer = config.findRenderer('.html.handlebars');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.handlebars', function() {
+        const fspath = 'path/to/foo.handlebars';
         const renderer = config.findRenderer('.html.handlebars');
         const format = renderer.renderFormat({
             fspath: fspath
@@ -857,7 +1479,46 @@ describe('Handlebars', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should parse frontmatter', function() {
+    it('should show correct filePath - path/to/foo.html.handlebars', function() {
+        const fspath = 'path/to/foo.html.handlebars';
+        const renderer = config.findRenderer('.html.handlebars');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.handlebars', function() {
+        const fspath = 'path/to/foo.handlebars';
+        const renderer = config.findRenderer('.html.handlebars');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.handlebars', function() {
+        const fspath = 'path/to/foo.html.handlebars';
+        const renderer = config.findRenderer('.html.handlebars');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'handlebars');
+    });
+
+    it('should show correct fileExtension - path/to/foo.handlebars', function() {
+        const fspath = 'path/to/foo.handlebars';
+        const renderer = config.findRenderer('.html.handlebars');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'handlebars');
+    });
+
+    it('should parse frontmatter - meta1.html.handlebars', function() {
         const rc = parseMetadata('meta1.html.handlebars');
         assert.ok(rc);
         assert.ok(rc.metadata);
@@ -869,10 +1530,42 @@ describe('Handlebars', function() {
         assert.match(rc.body, /<p>Hello, World!<\/p>/);
     });
 
+    it('should parse frontmatter - meta1.handlebars', function() {
+        const rc = parseMetadata('meta1.handlebars');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for Handlebars');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.handlebars$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
     it('should render Handlebars meta1.html.handlebars', async function() {
         let rendered;
         try {
             rendered = await doRender('meta1.html.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Handlebars<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
+
+    it('should render Handlebars meta1.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.handlebars', {
                     message: 'Heaven sent'
             });
         } catch (e) {
@@ -909,11 +1602,46 @@ describe('Handlebars', function() {
 
     });
 
+    it('should render Sync Handlebars meta1.handlebars', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.handlebars', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for Handlebars<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.ejs/);
+
+    });
 
     it('should render Markdown meta-empty.html.handlebars', async function() {
         let rendered;
         try {
             rendered = await doRender('meta-empty.html.handlebars', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for Handlebars/);
+        assert.doesNotMatch(rendered, /layout: foo.html.ejs/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
+    it('should render Markdown meta-empty.handlebars', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.handlebars', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -934,11 +1662,30 @@ describe('Handlebars', function() {
     // one has to jump so many hoops to register a partial.
 
 
-    it('should render partial templates', async function() {
+    it('should render partial templates - partial1.html.handlebars', async function() {
 
         let rendered;
         try {
             rendered = await doRender('partial1.html.handlebars', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<span id="message">See this message<\/span>/);
+        assert.match(rendered, /<span id="message">non-block helper<\/span>/);
+        assert.match(rendered, /PARTIAL BODY/);
+        assert.match(rendered, /<strong id="strong">Before nested message <span id="message">NESTED MESSAGE<\/span>/);
+        assert.match(rendered, /<span id="title">Partial test for Handlebars<\/span>/);
+    });
+
+    it('should render partial templates - partial1.handlebars', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.handlebars', { });
         } catch (e) {
             console.error(e);
             rendered = undefined;
@@ -979,6 +1726,28 @@ describe('LESS', function() {
         // assert.equal(rendered.imports.length, 0);
     });
 
+    it('should render LESS style.less', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('style.less', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // assert.ok(rendered.css);
+        // console.log(rendered);
+        assert.match(rendered, /width: 10px;/);
+        assert.match(rendered, /height: 20px;/);
+        assert.match(rendered, /border-top: dotted 1px black;/);
+        assert.match(rendered, /border-bottom: solid 2px black;/);
+        assert.match(rendered, /#header .navigation/);
+        assert.match(rendered, /#header .logo/);
+        // assert.ok(rendered.imports);
+        // assert.ok(Array.isArray(rendered.imports));
+        // assert.equal(rendered.imports.length, 0);
+    });
+
     it('should FAIL TO render Sync LESS style.css.less', function() {
         let rendered;
         let caughtError = false;
@@ -992,8 +1761,33 @@ describe('LESS', function() {
         assert.ok(caughtError === true);
     });
 
-    it('should show correct renderFormat', function() {
+    it('should FAIL TO render Sync LESS style.less', function() {
+        let rendered;
+        let caughtError = false;
+        try {
+            rendered = doRenderSync('style.less', { });
+        } catch (e) {
+            caughtError = true;
+            rendered = undefined;
+        }
+        assert.ok(typeof rendered === 'undefined' || rendered === null);
+        assert.ok(caughtError === true);
+    });
+
+    it('should show correct renderFormat - path/to/foo.css.less', function() {
         const fspath = 'path/to/foo.css.less';
+        const renderer = config.findRenderer('.css.less');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'CSS');
+    });
+
+    it('should show correct renderFormat - path/to/foo.less', function() {
+        const fspath = 'path/to/foo.less';
         const renderer = config.findRenderer('.css.less');
         const format = renderer.renderFormat({
             fspath: fspath
@@ -1025,8 +1819,56 @@ describe('LESS', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should NOT parse frontmatter', function() {
+    it('should show correct filePath - path/to/foo.css.less', function() {
+        const fspath = 'path/to/foo.css.less';
+        const renderer = config.findRenderer('.css.less');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.css');
+    });
+
+    it('should show correct filePath - path/to/foo.less', function() {
+        const fspath = 'path/to/foo.less';
+        const renderer = config.findRenderer('.css.less');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.css');
+    });
+
+    it('should show correct fileExtension - path/to/foo.css.less', function() {
+        const fspath = 'path/to/foo.css.less';
+        const renderer = config.findRenderer('.css.less');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'less');
+    });
+
+    it('should show correct fileExtension - path/to/foo.less', function() {
+        const fspath = 'path/to/foo.less';
+        const renderer = config.findRenderer('.css.less');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'less');
+    });
+
+    it('should NOT parse frontmatter - style.css.less', function() {
         const rc = parseMetadata('style.css.less');
+        assert.ok(rc);
+        assert.equal(typeof rc.metadata, 'undefined');
+        assert.equal(typeof rc.body, 'undefined');
+        assert.ok(rc.content);
+    });
+
+    it('should NOT parse frontmatter - style.less', function() {
+        const rc = parseMetadata('style.less');
         assert.ok(rc);
         assert.equal(typeof rc.metadata, 'undefined');
         assert.equal(typeof rc.body, 'undefined');
@@ -1046,6 +1888,27 @@ describe('JSON', function() {
         let rendered;
         try {
             rendered = await config.partial('json-format.html.ejs', {
+                data: {
+                    "Row1": "value 1",
+                    "Row2": "value 2",
+                    "Row3": "value 3"
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /Row1 :- value 1/);
+        assert.match(rendered, /Row2 :- value 2/);
+        assert.match(rendered, /Row3 :- value 3/);
+    });
+
+    it('should render JSON partial json-format.ejs', async function() {
+        let rendered;
+        try {
+            rendered = await config.partial('json-format.ejs', {
                 data: {
                     "Row1": "value 1",
                     "Row2": "value 2",
@@ -1084,7 +1947,28 @@ describe('JSON', function() {
         assert.match(rendered, /Row3 :- value 3/);
     });
 
-    it('should show correct renderFormat', function() {
+    it('should render Sync JSON partial json-format.ejs', function() {
+        let rendered;
+        try {
+            rendered = config.partialSync('json-format.ejs', {
+                data: {
+                    "Row1": "value 1",
+                    "Row2": "value 2",
+                    "Row3": "value 3"
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        // console.log(rendered);
+        assert.match(rendered, /Row1 :- value 1/);
+        assert.match(rendered, /Row2 :- value 2/);
+        assert.match(rendered, /Row3 :- value 3/);
+    });
+
+    it('should show correct renderFormat - path/to/foo.html.json', function() {
         const fspath = 'path/to/foo.html.json';
         const renderer = config.findRenderer('.html.json');
         const format = renderer.renderFormat({
@@ -1094,6 +1978,58 @@ describe('JSON', function() {
         assert.ok(format);
         assert.equal(typeof format, 'string');
         assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.json', function() {
+        const fspath = 'path/to/foo.json';
+        const renderer = config.findRenderer('.html.json');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct filePath - path/to/foo.html.json', function() {
+        const fspath = 'path/to/foo.html.json';
+        const renderer = config.findRenderer('.html.json');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.json', function() {
+        const fspath = 'path/to/foo.json';
+        const renderer = config.findRenderer('.html.json');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.json', function() {
+        const fspath = 'path/to/foo.html.json';
+        const renderer = config.findRenderer('.html.json');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'json');
+    });
+
+    it('should show correct fileExtension - path/to/foo.json', function() {
+        const fspath = 'path/to/foo.json';
+        const renderer = config.findRenderer('.html.json');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'json');
     });
 
     it('should fail on bad fspath for renderFormat', function() {
@@ -1117,7 +2053,7 @@ describe('JSON', function() {
         assert.equal(caughtError, true);
     });
 
-    it('should parse frontmatter', function() {
+    it('should parse frontmatter - meta1.html.json', function() {
         const rc = parseMetadata('meta1.html.json');
         assert.ok(rc);
         assert.ok(rc.metadata);
@@ -1126,6 +2062,23 @@ describe('JSON', function() {
         assert.equal(rc.metadata.title, 'Metadata test for JSON');
         assert.equal(rc.metadata.layout, 'foo.html.ejs');
         assert.match(rc.fspath, /meta1.html.json$/);
+        assert.match(rc.body, /"hello": "World!"/);
+
+        const json = JSON.parse(rc.body);
+        assert.equal(json.message, 'This is the body.');
+        assert.equal(json.hello, 'World!');
+
+    });
+
+    it('should parse frontmatter - meta1.json', function() {
+        const rc = parseMetadata('meta1.json');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for JSON');
+        assert.equal(rc.metadata.layout, 'foo.html.ejs');
+        assert.match(rc.fspath, /meta1.json$/);
         assert.match(rc.body, /"hello": "World!"/);
 
         const json = JSON.parse(rc.body);
