@@ -37,20 +37,45 @@ const mditConfig = {
 import { default as mdit } from 'markdown-it';
 var md;
 
+/**
+ * Markdown rendering using the markdown-it package.
+ */
 export class MarkdownRenderer extends Renderer {
     constructor() {
         super(".html.md", /^(.*\.html)\.(md)$|^(.*)\.(md)$/);
         md = mdit(mditConfig);
     }
-  
+
+    /**
+     * Initializes a Markdown-IT instance with a new configuration,
+     * replacing the default instance with the default configuration.
+     *
+     * @param newConfig 
+     * @returns 
+     */
     configuration(newConfig) {
         md = mdit(newConfig);
         return this;
     }
-  
+
+    /**
+     * Adds a MarkdownIT plugin by calling the underlying `use` method.
+     *
+     * @param mditPlugin 
+     * @param options 
+     * @returns 
+     */
     use(mditPlugin, options) {
         md.use(mditPlugin, options);
         return this;
+    }
+
+    /**
+     * Allows extending the rendering rules by exposing
+     * the `md.renderer.rules` array.
+     */
+    get rendererRules() {
+        return md.renderer.rules;
     }
   
     renderSync(context: RenderingContext): string {
