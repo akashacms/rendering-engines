@@ -13,6 +13,9 @@
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "commonjs",
+  "engines": {
+    "node": ">=24.x"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -31,8 +34,8 @@
     "templates"
   ],
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "typescript": "^5.7.x"
+    "@types/node": "^24.x",
+    "typescript": "^5.8.x"
   },
   "dependencies": {
     "@asciidoctor/core": "^3.0.x",
@@ -45,5 +48,9 @@
     "markdown-it": "^14.0.x",
     "nunjucks": "^3.2.x",
     "runtime-data-validation": "^0.2.2"
+  },
+  "overrides": {
+    "rimraf@<4": "5.0.10",
+    "glob@<9": "10.4.5"
   }
 }
