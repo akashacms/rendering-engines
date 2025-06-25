@@ -42,10 +42,10 @@
     "ejs": "^3.1.x",
     "gray-matter": "^4.0.3",
     "handlebars": "^4.7.x",
-    "less": "^4.2.x",
-    "liquid": "^5.1.1",
+    "less": "^4.3.x",
+    "liquidjs": "^10.21.x",
     "mahabhuta": "^0.8.x",
-    "markdown-it": "^14.0.x",
+    "markdown-it": "^14.1.x",
     "nunjucks": "^3.2.x",
     "runtime-data-validation": "^0.2.2"
   },
