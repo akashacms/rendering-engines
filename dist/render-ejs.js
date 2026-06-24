@@ -52,6 +52,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EJSRenderer = void 0;
+const util = require('node:util');
 const Renderer_js_1 = require("./Renderer.js");
 const index_js_1 = require("./index.js");
 const ejs = __importStar(require("ejs"));
@@ -120,7 +121,7 @@ class EJSRenderer extends Renderer_js_1.Renderer {
         return new Promise((resolve, reject) => {
             try {
                 let opts = this.getEJSOptions(context.fspath ? context.fspath : undefined);
-                // console.log(`render async ${context.content} ${context.metadata} ${opts}`);
+                // console.log(`render async ${context.content} ${util.inspect(context.metadata)} ${util.inspect(opts)}`);
                 resolve(ejs.render(toRender, context.metadata, opts));
                 // const { template, opts } = this.compiledTemplate(text, vpinfo);
                 // resolve(template(metadata, opts));

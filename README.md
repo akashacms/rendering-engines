@@ -1,6 +1,12 @@
 # Renderers - Consolidated support for multiple website content rendering tools in Node.js
 
-The `@akashacms/renderers` package can be used by any software, and does not have known dependencies on other AkashaCMS packages.  It was designed for use by AkashaCMS, but also designed to be potentially usable by any other software.
+This is version 0.10 which is being designed for compatibility with akasharender 0.10.
+
+
+
+The `@akashacms/renderers` package simplifies using any of several rendering tools, including Markdown (using Markdown-IT), AsciiDoc, LESS, and several template engines.
+
+It can be used in any Node.js (or Deno or Bun) application.  While it was designed to be used in the AkashaCMS ecosystem, especially akasharender, it does not have direct dependencies any AkashaCMS feature.  Instead it can be integrated into any other application.
 
 The purpose is to present a harmonized interface to any package whose purpose is rendering files used in website construction.  These packages fall into three categories:
 

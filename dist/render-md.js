@@ -97,6 +97,7 @@ class MarkdownRenderer extends Renderer_js_1.Renderer {
         // console.log('MarkdownRenderer render');
         const toRender = typeof context.body === 'string' ? context.body : context.content;
         if (typeof toRender !== 'string') {
+console.log(`MD render `, context);
             throw new Error(`MD render no context.body or context.content supplied for rendering`);
         }
         try {
