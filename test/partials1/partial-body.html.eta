@@ -1,0 +1,3 @@
+<strong id="strong">partialBody = <%= it.partialBody %></strong>
+
+<p>ETA partial-body.html.eta</p>

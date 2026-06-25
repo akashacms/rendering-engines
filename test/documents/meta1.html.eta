@@ -1,0 +1,15 @@
+---
+title: Metadata test for ETA
+layout: foo.html.eta
+hello: world
+---
+
+<h1><%= it.title %></h1>
+
+<p>message: <%= it.message %></p>
+
+<p>This is the body.</p>
+
+<p>Hello, World!</p>
+
+<p>hello: <%= it.hello %></p>

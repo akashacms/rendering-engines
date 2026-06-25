@@ -1,0 +1,5 @@
+---
+title: Metadata test for ETA
+layout: foo.html.eta
+hello: world
+---
