@@ -45,6 +45,11 @@ Supported rendering engines are:
         <td>EJS</td>
     </tr>
     <tr>
+        <td>ETA</td>
+        <td><code>.html.eta</code></td>
+        <td>ETA</td>
+    </tr>
+    <tr>
         <td>Handlebars</td>
         <td><code>.html.handlebars</code></td>
         <td>Handlebars</td>
