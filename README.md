@@ -1,6 +1,6 @@
 # Renderers - Consolidated support for multiple website content rendering tools in Node.js
 
-This is version 0.10 which is being designed for compatibility with akasharender 0.10.
+This is version 0.10 which is for compatibility with akasharender 0.10.
 
 The `@akashacms/renderers` package simplifies using any of several rendering tools, including Markdown (using Markdown-IT), AsciiDoc, LESS, and several template engines.
 
@@ -129,14 +129,13 @@ The supported engines are:
 
 Name       | Extension          | Description
 -----------|--------------------|------------
-AsciiDoc   | `.html.adoc`       | Supports AsciiDoctor documents
-Markdown   | `.html.md`         | Supports Markdown documents
-Markdoc    | `.html.markdoc`    | Supports Markdoc documents
-LESS       | `.css.less`        | Supports compiling LESS files to CSS
-EJS        | `.html.ejs`        | EJS
-ETA        | `.html.eta`        | ETA
-Handlebars | `.html.handlebars` | Handlebars
+AsciiDoc   | `.html.adoc`       | Supports AsciiDoctor documents using [@asciidoctor/core](https://www.npmjs.com/package/@asciidoctor/core)
+Markdown   | `.html.md`         | Supports Markdown documents using [Markdown-it](https://www.npmjs.com/package/markdown-it)
+LESS       | `.css.less`        | Supports compiling LESS files to CSS using [LESS](https://www.npmjs.com/package/less)
+EJS        | `.html.ejs`        | EJS using [EJS](https://www.npmjs.com/package/ejs)
+ETA        | `.html.eta`        | ETA using [ETA](https://www.npmjs.com/package/eta)
+Handlebars | `.html.handlebars` | Handlebars using [Handlebars](https://www.npmjs.com/package/handlebars)
 JSON       | `.html.json`       | Supports rendering a JSON document through a template to produce HTML
-Liquid     | `.html.liquid`     | LiquidJS
-Nunjucks   | `.html.njk`        | Nunjucks
+Liquid     | `.html.liquid`     | LiquidJS using [LiquidJS](https://www.npmjs.com/package/liquidjs)
+Nunjucks   | `.html.njk`        | Nunjucks using [Nunjucks](https://www.npmjs.com/package/nunjucks)
 

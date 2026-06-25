@@ -47,8 +47,7 @@
     "liquidjs": "^10.27.x",
     "mahabhuta": "^0.9.x",
     "markdown-it": "^14.2.x",
-    "nunjucks": "^3.2.x",
-    "runtime-data-validation": "^0.2.2"
+    "nunjucks": "^3.2.x"
   },
   "overrides": {
     "rimraf@<4": "5.0.10",
