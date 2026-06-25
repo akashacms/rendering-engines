@@ -52,6 +52,7 @@ describe('Setup', function() {
             '.html.adoc', 
             // '.html.markdoc',
             '.html.ejs',
+            '.html.eta',
             '.html.liquid',
             '.html.njk',
             '.html.handlebars',
