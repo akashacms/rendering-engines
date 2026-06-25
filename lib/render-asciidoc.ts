@@ -18,26 +18,30 @@
  */
 
 // import * as path from 'path';
-// import * as util from 'util';
+import * as util from 'util';
 import { Renderer, parseFrontmatter } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index';
 
-import { default as AsciiDoctor } from '@asciidoctor/core';
-import Document from '@asciidoctor/core';
+import {
+    convert,
+    Document
+    // default as AsciiDoctor
+} from '@asciidoctor/core';
 
-const asciidoctor = AsciiDoctor();
-
-const _renderer_doctype = Symbol('doctype');
+// const asciidoctor = AsciiDoctor();
 
 export class AsciidocRenderer extends Renderer {
+
+    #doctype;
+
     constructor() {
         super(".html.adoc", /^(.*\.html)\.(adoc)$|^(.*)\.(adoc)$/);
-        this[_renderer_doctype] = 'article';
+        this.#doctype = 'article';
     }
 
     configuration(options) {
         if (options && options.doctype) {
-            this[_renderer_doctype] = options.doctype;
+            this.#doctype = options.doctype;
         }
         return this;
     }
@@ -48,9 +52,9 @@ export class AsciidocRenderer extends Renderer {
     //     base_dir - controls where the include directive pulls files
     //     safe - enables safe mode (?? what does that mean ??)
     //     template_dir - controls where template files are found
-    convert(context: RenderingContext): string {
+    async convert(context: RenderingContext): Promise<string> {
         var options = context.metadata.asciidoctor ? context.metadata.asciidoctor : {
-            doctype: this[_renderer_doctype]
+            doctype: this.#doctype
         };
         // AsciiDoctor.js doesn't allow non-String/Number items in 
         // the attributes object.  That means we cannot simply use
@@ -75,32 +79,26 @@ export class AsciidocRenderer extends Renderer {
         if (typeof toRender !== 'string') {
             throw new Error(`AsciiDOC convert no context.body or context.content supplied for rendering`);
         }
-        const ret = asciidoctor.convert(
+        const ret = await convert(
             toRender,
             options);
-        if (ret instanceof Document) {
-            throw new Error(`convert gave us a Document for ${context.fspath}`);
+        if (typeof ret !== 'string') {
+            throw new Error(`convert gave us a non-string (${typeof ret}) for ${context.fspath} ${util.inspect(ret)}`);
         } else {
             return <string>ret;
         }
     }
 
-    renderSync(context: RenderingContext): string {
-        // console.log('AsciidocRenderer renderSync '+ text);
-        var ret = this.convert(context);
-        // console.log(ret);
-        return ret;
-    }
+    // renderSync(context: RenderingContext): string {
+    //     // console.log('AsciidocRenderer renderSync '+ text);
+    //     var ret = this.convert(context);
+    //     // console.log(ret);
+    //     return ret;
+    // }
 
     async render(context: RenderingContext): Promise<string> {
         // console.log('AsciidocRenderer render');
-        return new Promise((resolve, reject) => {
-            try {
-                resolve(this.convert(context /* .content, context.metadata */));
-            } catch(e) {
-                reject(e);
-            }
-        });
+        return this.convert(context /* .content, context.metadata */);
     }
 
     /**

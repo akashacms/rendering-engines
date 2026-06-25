@@ -22,7 +22,7 @@ import { Renderer, parseFrontmatter } from './Renderer.js';
 import { RenderingContext, RenderingFormat } from './index.js';
 
 import * as ejs from 'ejs';
-import * as ejsutils from 'ejs/lib/utils.js';
+// import * as ejsutils from 'ejs/lib/utils.js';
 
 // TODO support .php.ejs
 export class EJSRenderer extends Renderer {

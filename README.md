@@ -2,8 +2,6 @@
 
 This is version 0.10 which is being designed for compatibility with akasharender 0.10.
 
-
-
 The `@akashacms/renderers` package simplifies using any of several rendering tools, including Markdown (using Markdown-IT), AsciiDoc, LESS, and several template engines.
 
 It can be used in any Node.js (or Deno or Bun) application.  While it was designed to be used in the AkashaCMS ecosystem, especially akasharender, it does not have direct dependencies any AkashaCMS feature.  Instead it can be integrated into any other application.
@@ -129,15 +127,16 @@ The layout template should receive all metadata values.  This allows those value
 
 The supported engines are:
 
-Name | Extension | Description
------|-----------|------------
-AsciiDoc | `.html.adoc` | Supports AsciiDoctor documents
-Markdown | `.html.md`   | Supports Markdown documents
-Markdoc  | `.html.markdoc` | Supports Markdoc documents
-LESS     | `.css.less`  | Supports compiling LESS files to CSS
-EJS      | `.html.ejs`  | EJS
+Name       | Extension          | Description
+-----------|--------------------|------------
+AsciiDoc   | `.html.adoc`       | Supports AsciiDoctor documents
+Markdown   | `.html.md`         | Supports Markdown documents
+Markdoc    | `.html.markdoc`    | Supports Markdoc documents
+LESS       | `.css.less`        | Supports compiling LESS files to CSS
+EJS        | `.html.ejs`        | EJS
+ETA        | `.html.eta`        | ETA
 Handlebars | `.html.handlebars` | Handlebars
-JSON     | `.html.json` | Supports rendering a JSON document through a template to produce HTML
-Liquid   | `.html.liquid` | LiquidJS
-Nunjucks | `.html.njk`  | Nunjucks
+JSON       | `.html.json`       | Supports rendering a JSON document through a template to produce HTML
+Liquid     | `.html.liquid`     | LiquidJS
+Nunjucks   | `.html.njk`        | Nunjucks
 

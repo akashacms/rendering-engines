@@ -17,21 +17,21 @@
  *  limitations under the License.
  */
 
-import * as util from 'util';
-import * as path from 'path';
-import { promises as fsp } from 'fs';
-import * as fs from 'fs';
+import util from 'node:util';
+import path from 'node:path';
+import { promises as fsp } from 'node:fs';
+import fs from 'node:fs';
 
 import { Renderer } from './Renderer';
 import { HTMLRenderer } from './HTMLRenderer';
 import { AsciidocRenderer } from './render-asciidoc';
 import { CSSLESSRenderer } from './render-cssless';
 import { EJSRenderer } from './render-ejs';
+import { ETARenderer } from './render-eta';
 import { HandlebarsRenderer } from './render-handlebars';
 import { JSONRenderer } from './render-json';
 import { LiquidRenderer } from './render-liquid';
 import { MarkdownRenderer } from './render-md';
-// import { MarkdocRenderer } from './render-markdoc';
 import { NunjucksRenderer } from './render-nunjucks';
 
 export { Renderer, parseFrontmatter } from './Renderer';
@@ -39,19 +39,13 @@ export { Renderer, parseFrontmatter } from './Renderer';
 export { AsciidocRenderer } from './render-asciidoc';
 export { CSSLESSRenderer } from './render-cssless';
 export { EJSRenderer } from './render-ejs';
+export { ETARenderer } from './render-eta.js';
 export { HandlebarsRenderer } from './render-handlebars';
 export { JSONRenderer } from './render-json';
 export { LiquidRenderer } from './render-liquid';
 export { MarkdownRenderer } from './render-md';
 // export { MarkdocRenderer } from './render-markdoc';
 export { NunjucksRenderer } from './render-nunjucks';
-
-import {
-    IsIntRange, IsInt, IsFloatRange, IsFloat,
-    generateValidationDecorator,
-    ValidateParams, ValidateAccessor,
-} from 'runtime-data-validation';
-
 
 // TODO -DONE require a container class to hold the list of renderers
 //      -DONE allow Renderers to be added by other code
@@ -147,9 +141,10 @@ export class Configuration {
      * An array of absolute paths to directories containing
      * partial templates.
      */
-    @ValidateAccessor<Array<string>>()
-    @IsPathArray()
-    set partialDirs(dirz: Array<string>) { this.#partialDirs = dirz; }
+    set partialDirs(dirz: Array<string>) {
+        if (!Array.isArray(dirz)) throw new Error(`partialDirs - dirz must be array`);
+        this.#partialDirs = dirz;
+    }
     get partialDirs() /*: Array<string> */ { return this.#partialDirs; }
 
     /**
@@ -194,9 +189,10 @@ export class Configuration {
      * An array of absolute paths to directories containing
      * layout templates.
      */
-    @ValidateAccessor<Array<string>>()
-    @IsPathArray()
-    set layoutDirs(dirz: Array<string>) { this.#layoutDirs = dirz; }
+    set layoutDirs(dirz: Array<string>) {
+        if (!Array.isArray(dirz)) throw new Error(`layoutDirs - dirz must be array`);
+        this.#layoutDirs = dirz;
+    }
     get layoutDirs(): Array<string> { return this.#layoutDirs; }
 
     /**
@@ -258,8 +254,7 @@ export class Configuration {
      */
     get renderers(): Array<Renderer> { return this.#renderers; }
 
-    @ValidateParams
-    registerRenderer(@IsRenderer() renderer: Renderer): void {
+    registerRenderer(renderer: Renderer): void {
         if (!(renderer instanceof Renderer)) {
             console.error('Not A Renderer '+ util.inspect(renderer));
             throw new Error(`Not a Renderer ${util.inspect(renderer)}`);
@@ -279,8 +274,7 @@ export class Configuration {
      * file name to be .xhtml.  We're not checking if the renderer name
      * is already there in case epubtools must use the same renderer name.
      */
-    @ValidateParams
-    registerOverrideRenderer(@IsRenderer() renderer: Renderer): void {
+    registerOverrideRenderer(renderer: Renderer): void {
         if (!(renderer instanceof Renderer)) {
             console.error('Not A Renderer '+ util.inspect(renderer));
             throw new Error(`Not a Renderer ${util.inspect(renderer)}`);
@@ -289,16 +283,14 @@ export class Configuration {
         this.#renderers.unshift(renderer);
     }
 
-    @ValidateParams
-    findRendererName(@IsString() name: string): Renderer {
+    findRendererName(name: string): Renderer {
         for (var r of this.#renderers) {
             if (r.name === name) return r;
         }
         return undefined;
     }
 
-    @ValidateParams
-    findRendererPath(@IsString() _path: string): Renderer {
+    findRendererPath(_path: string): Renderer {
         // log(`findRendererPath ${_path}`);
         for (var r of this.#renderers) {
             // console.log(`findRendererPath ${_path} ${r.name}`)
@@ -317,6 +309,7 @@ export class Configuration {
         this.registerRenderer(new AsciidocRenderer());
         // this.registerRenderer(new MarkdocRenderer());
         this.registerRenderer(new EJSRenderer());
+        this.registerRenderer(new ETARenderer());
         this.registerRenderer(new LiquidRenderer());
         this.registerRenderer(new NunjucksRenderer());
         this.registerRenderer(new HandlebarsRenderer());
@@ -327,8 +320,7 @@ export class Configuration {
     /**
      * Find a Renderer by its extension.
      */
-    @ValidateParams
-    findRenderer(@IsString() name: string): Renderer {
+    findRenderer(name: string): Renderer {
         return this.findRendererName(name);
     }
 
@@ -345,36 +337,25 @@ export class Configuration {
         this.#partialSync = pfunc;
     }
 
-    @ValidateParams
-    async partial(
-        @IsString() fname: string,
-        /* @IsObject() */ metadata: any) {
-        
-        return this.#partial(fname, metadata);
+    async partial(fname: string, metadata: any) {
+        const ret = await this.#partial(fname, metadata);
+        // console.log(`Configuration partial ${fname} ${util.inspect(metadata)} ==> ${ret}`);
+        return ret;
     }
 
-    @ValidateParams
-    partialSync(
-        @IsString() fname: string,
-        /* @IsObject() */ metadata: any) {
-        
-        return this.#partialSync(fname, metadata);
+    partialSync(fname: string, metadata: any) {
+        const ret = this.#partialSync(fname, metadata);
+        // console.log(`Configuration partialSync ${fname} ${util.inspect(metadata)} ==> ${ret}`);
+        return ret;
     }
 
 }
 
-// Custom validators
 
 function isString(s: string) {
     if (!s) return false;
     if (!(typeof s === 'string')) return false;
     return true;
-}
-
-function IsString() {
-    return generateValidationDecorator(
-        isString,
-        `Value :value: is not a string`);
 }
 
 function isObject(s: any) {
@@ -383,24 +364,11 @@ function isObject(s: any) {
     return true;
 }
 
-function IsObject() {
-    return generateValidationDecorator(
-        isObject,
-        `Value :value: is not an object`);
-}
-
-
 function isRenderer(r) {
     if (!r) return false;
     if (!(typeof r === 'object')) return false;
     if (!(r instanceof Renderer)) return false;
     return true;
-}
-
-function IsRenderer() {
-    return generateValidationDecorator(
-        isRenderer,
-        `Value :value: is not a Renderer`);
 }
 
 function isPathArray(ary) {
@@ -411,22 +379,10 @@ function isPathArray(ary) {
     return true;
 }
 
-function IsPathArray() {
-    return generateValidationDecorator(
-        isPathArray,
-        `Value :value: is not a Path Array`);
-}
-
 function isAbsolutePath(p) {
     if (!(typeof p === 'string')) return false;
     if (!path.isAbsolute(p)) return false;
     return true;
-}
-
-function IsAbsolutePath() {
-    return generateValidationDecorator(
-        isAbsolutePath,
-        `Value :value: is not an Absolute Path`);
 }
 
 // Default Partial/Layout finder functions

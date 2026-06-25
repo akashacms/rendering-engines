@@ -40,7 +40,7 @@
   "dependencies": {
     "@asciidoctor/core": "^4.x",
     "ejs": "^6.x",
-    "eta": "^4.6.0",
+    "eta": "^4.6.x",
     "gray-matter": "^4.0.3",
     "handlebars": "^4.7.x",
     "less": "^4.6.x",
@@ -53,7 +53,6 @@
   "overrides": {
     "rimraf@<4": "5.0.10",
     "glob@<9": "10.4.5",
-    "js-yaml@<4.1.1": "^5.x",
     "encoding-sniffer@<0.3": "^1.x"
   }
 }
