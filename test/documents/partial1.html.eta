@@ -1,0 +1,26 @@
+---
+title: Partial test for ETA
+layout: foo.html.eta
+---
+
+<h1><%= it.title %></h1>
+
+<span class="hello-world">
+<%~ it.partialSync('hello-world.html') -%>
+</span>
+
+############### it.partialSync('partial-body.html.eta')
+
+<span class="partial-body">
+<%~ it.partialSync('partial-body.html.eta', {
+    partialBody: 'PARTIAL BODY SYNC - partial1.html.eta'
+}) %>
+</span>
+
+############### it.partial('partial-body.html.eta')
+
+<span class="partial-body">
+<%~ await it.partial('partial-body.html.eta', {
+    partialBody: 'PARTIAL BODY ASYNC - partial1.html.eta'
+}) %>
+</span>

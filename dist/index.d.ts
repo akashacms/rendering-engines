@@ -21,6 +21,7 @@ export { Renderer, parseFrontmatter } from './Renderer';
 export { AsciidocRenderer } from './render-asciidoc';
 export { CSSLESSRenderer } from './render-cssless';
 export { EJSRenderer } from './render-ejs';
+export { ETARenderer } from './render-eta.js';
 export { HandlebarsRenderer } from './render-handlebars';
 export { JSONRenderer } from './render-json';
 export { LiquidRenderer } from './render-liquid';

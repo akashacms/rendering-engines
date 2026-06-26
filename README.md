@@ -1,6 +1,10 @@
 # Renderers - Consolidated support for multiple website content rendering tools in Node.js
 
-The `@akashacms/renderers` package can be used by any software, and does not have known dependencies on other AkashaCMS packages.  It was designed for use by AkashaCMS, but also designed to be potentially usable by any other software.
+This is `@akashacms/renderers@0.9` which maintains compatibility with akasharender@0.9.
+
+The `@akashacms/renderers` package simplifies using any of several rendering tools, including Markdown (using Markdown-IT), AsciiDoc, LESS, and several template engines.
+
+It can be used in any Node.js (or Deno or Bun) application.  While it was designed to be used in the AkashaCMS ecosystem, especially akasharender, it does not have direct dependencies any AkashaCMS feature.  Instead it can be integrated into any other application.
 
 The purpose is to present a harmonized interface to any package whose purpose is rendering files used in website construction.  These packages fall into three categories:
 
@@ -123,15 +127,15 @@ The layout template should receive all metadata values.  This allows those value
 
 The supported engines are:
 
-Name | Extension | Description
------|-----------|------------
-AsciiDoc | `.html.adoc` | Supports AsciiDoctor documents
-Markdown | `.html.md`   | Supports Markdown documents
-Markdoc  | `.html.markdoc` | Supports Markdoc documents
-LESS     | `.css.less`  | Supports compiling LESS files to CSS
-EJS      | `.html.ejs`  | EJS
-Handlebars | `.html.handlebars` | Handlebars
-JSON     | `.html.json` | Supports rendering a JSON document through a template to produce HTML
-Liquid   | `.html.liquid` | LiquidJS
-Nunjucks | `.html.njk`  | Nunjucks
+Name       | Extension          | Description
+-----------|--------------------|------------
+AsciiDoc   | `.html.adoc`       | Supports AsciiDoctor documents using [@asciidoctor/core](https://www.npmjs.com/package/@asciidoctor/core)
+Markdown   | `.html.md`         | Supports Markdown documents using [Markdown-it](https://www.npmjs.com/package/markdown-it)
+LESS       | `.css.less`        | Supports compiling LESS files to CSS using [LESS](https://www.npmjs.com/package/less)
+EJS        | `.html.ejs`        | EJS using [EJS](https://www.npmjs.com/package/ejs)
+ETA        | `.html.eta`        | ETA using [ETA](https://www.npmjs.com/package/eta)
+Handlebars | `.html.handlebars` | Handlebars using [Handlebars](https://www.npmjs.com/package/handlebars)
+JSON       | `.html.json`       | Supports rendering a JSON document through a template to produce HTML
+Liquid     | `.html.liquid`     | LiquidJS using [LiquidJS](https://www.npmjs.com/package/liquidjs)
+Nunjucks   | `.html.njk`        | Nunjucks using [Nunjucks](https://www.npmjs.com/package/nunjucks)
 

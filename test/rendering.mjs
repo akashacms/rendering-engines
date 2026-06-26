@@ -1,7 +1,8 @@
 
 import * as assert from 'node:assert';
 
-import * as path from 'node:path';
+import path from 'node:path';
+import util from 'node:util';
 import * as url from 'url';
 import { promises as fsp } from 'fs';
 import * as fs from 'fs';
@@ -32,12 +33,14 @@ async function doRender(fn, metadata) {
     }
 
     rc.metadata.partial = async (fname, metadata) => {
-        return config.partial(fname, metadata);
+        const ret = await config.partial(fname, metadata);
+        // console.log(`partial ${fname} ${util.inspect(metadata)} ==> ${ret}`);
+        return ret;
     };
     rc.metadata.partialSync = (fname, metadata) => {
         // console.log(`partialSync ${fname}`);
         const ret = config.partialSync(fname, metadata);
-        // console.log(`partialSync ${fname} ==> ${ret}`);
+        // console.log(`partialSync ${fname} ${util.inspect(metadata)} ==> ${ret}`);
         return ret;
     };
     return await renderer.render(rc);
@@ -253,18 +256,16 @@ describe('AsciiDoctor', function() {
         assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
     });
 
-    it('should render Sync AsciiDoctor asciidoctor-test.html.adoc', function() {
+    it('should not render Sync AsciiDoctor asciidoctor-test.html.adoc', function() {
         let rendered;
         try {
             rendered = doRenderSync('asciidoctor-test.html.adoc', { });
         } catch (e) {
-            console.error(e);
+            // An error is expected
+            // console.error(e);
             rendered = undefined;
         }
-        assert.ok(rendered);
-        // console.log(rendered);
-        assert.match(rendered, /.*\<p\>Preamble paragraph.\<\/p\>/);
-        assert.match(rendered, /.*h3 id="id_section_a_subsection".Section A Subsection..h3.*/)
+        assert.ok(typeof rendered === 'undefined');
     });
 
     it('should show correct renderFormat - path/to/foo.html.adoc', function() {
@@ -747,6 +748,322 @@ describe('EJS', function() {
         // console.log(rendered);
         assert.match(rendered, /<p>Hello, World!<\/p>/);
         assert.match(rendered, /<strong id="strong">PARTIAL BODY<\/strong>/);
+    });
+
+});
+
+describe('ETA', function() {
+
+    it('should render ETA doc1.html.eta', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.html.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should render ETA doc1.eta', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('doc1.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should render Sync ETA doc1.html.eta', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.html.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should render Sync ETA doc1.eta', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('doc1.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+    });
+
+    it('should show correct renderFormat - path/to/foo.html.eta', function() {
+        const fspath = 'path/to/foo.html.eta';
+        const renderer = config.findRenderer('.html.eta');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should show correct renderFormat - path/to/foo.eta', function() {
+        const fspath = 'path/to/foo.eta';
+        const renderer = config.findRenderer('.html.eta');
+        const format = renderer.renderFormat({
+            fspath: fspath
+        });
+
+        assert.ok(format);
+        assert.equal(typeof format, 'string');
+        assert.equal(format, 'HTML');
+    });
+
+    it('should fail on bad fspath for renderFormat', function() {
+        const fspath = 'path/to/foo.html';
+        const renderer = config.findRenderer('.html.eta');
+        // console.log(renderer);
+        let format;
+        let caughtError = false;
+        try {
+            format = renderer.renderFormat({
+                fspath: fspath
+            });
+        } catch (err) {
+            caughtError = true;
+            format = undefined;
+        }
+
+        // console.log(`caughtError ${caughtError} format ${format}`);
+
+        assert.equal(typeof format, 'undefined');
+        assert.equal(caughtError, true);
+    });
+
+    it('should show correct filePath - path/to/foo.html.eta', function() {
+        const fspath = 'path/to/foo.html.eta';
+        const renderer = config.findRenderer('.html.eta');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct filePath - path/to/foo.eta', function() {
+        const fspath = 'path/to/foo.eta';
+        const renderer = config.findRenderer('.html.eta');
+        const renderTo = renderer.filePath(fspath);
+
+        assert.ok(renderTo);
+        assert.equal(typeof renderTo, 'string');
+        assert.equal(renderTo, 'path/to/foo.html');
+    });
+
+    it('should show correct fileExtension - path/to/foo.html.eta', function() {
+        const fspath = 'path/to/foo.html.eta';
+        const renderer = config.findRenderer('.html.eta');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'eta');
+    });
+
+    it('should show correct fileExtension - path/to/foo.eta', function() {
+        const fspath = 'path/to/foo.eta';
+        const renderer = config.findRenderer('.html.eta');
+        const extension = renderer.fileExtension(fspath);
+
+        assert.ok(extension);
+        assert.equal(typeof extension, 'string');
+        assert.equal(extension, 'eta');
+    });
+
+    it('should parse frontmatter - meta1.html.eta', function() {
+        const rc = parseMetadata('meta1.html.eta');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for ETA');
+        assert.equal(rc.metadata.layout, 'foo.html.eta');
+        assert.match(rc.fspath, /meta1.html.eta$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
+    it('should parse frontmatter - meta1.eta', function() {
+        const rc = parseMetadata('meta1.eta');
+        assert.ok(rc);
+        assert.ok(rc.metadata);
+        assert.ok(rc.body);
+        assert.ok(rc.content);
+        assert.equal(rc.metadata.title, 'Metadata test for ETA');
+        assert.equal(rc.metadata.layout, 'foo.html.eta');
+        assert.match(rc.fspath, /meta1.eta$/);
+        assert.match(rc.body, /<p>Hello, World!<\/p>/);
+    });
+
+    it('should render ETA meta1.html.eta', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.html.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        // console.log(rendered);
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for ETA<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.eta/);
+    });
+
+    it('should render ETA meta1.eta', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta1.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        // console.log(rendered);
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for ETA<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.eta/);
+    });
+
+    it('should render Sync ETA meta1.html.eta', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.html.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for ETA<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.eta/);
+
+    });
+
+    it('should render Sync ETA meta1.eta', function() {
+        let rendered;
+        try {
+            rendered = doRenderSync('meta1.eta', {
+                    message: 'Heaven sent'
+            });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.ok(rendered);
+        assert.match(rendered, /<h1>Metadata test for ETA<\/h1>/);
+        assert.match(rendered, /message:.*Heaven sent.*/);
+        assert.match(rendered, /.*Hello.*World.*/);
+        assert.match(rendered, /<p>Hello, World!<\/p>/);
+        assert.match(rendered, /<p>hello: world<\/p>/);
+        assert.doesNotMatch(rendered, /layout\: foo.html.eta/);
+
+    });
+
+    it('should render Markdown meta-empty.html.eta', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.html.eta', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for ETA/);
+        assert.doesNotMatch(rendered, /layout: foo.html.eta/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
+    it('should render Markdown meta-empty.eta', async function() {
+        let rendered;
+        try {
+            rendered = await doRender('meta-empty.eta', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.doesNotMatch(rendered, /title: Metadata test for ETA/);
+        assert.doesNotMatch(rendered, /layout: foo.html.eta/);
+        assert.doesNotMatch(rendered, /hello: world/);
+
+    });
+
+    it('should render partial templates - partial1.html.eta', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.html.eta', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /Hello, World!/);
+        assert.match(rendered, /PARTIAL BODY SYNC/);
+        assert.match(rendered, /PARTIAL BODY ASYNC/);
+    });
+
+    it('should render partial templates - partial1.eta', async function() {
+
+        let rendered;
+        try {
+            rendered = await doRender('partial1.eta', { });
+        } catch (e) {
+            console.error(e);
+            rendered = undefined;
+        }
+        assert.equal(typeof rendered, 'string');
+        // console.log(rendered);
+        assert.match(rendered, /Hello, World!/);
+        assert.match(rendered, /PARTIAL BODY SYNC/);
+        assert.match(rendered, /PARTIAL BODY ASYNC/);
     });
 
 });

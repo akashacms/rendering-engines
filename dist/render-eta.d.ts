@@ -17,12 +17,11 @@
  *  limitations under the License.
  */
 import { Renderer } from './Renderer.js';
-import { RenderingContext, RenderingFormat } from './index';
-export declare class AsciidocRenderer extends Renderer {
+import { RenderingContext, RenderingFormat } from './index.js';
+export declare class ETARenderer extends Renderer {
     #private;
     constructor();
-    configuration(options: any): this;
-    convert(context: RenderingContext): Promise<string>;
+    renderSync(context: RenderingContext): any;
     render(context: RenderingContext): Promise<string>;
     /**
      * Parse frontmatter in the format of lines of dashes
@@ -32,6 +31,10 @@ export declare class AsciidocRenderer extends Renderer {
      * @returns
      */
     parseMetadata(context: RenderingContext): RenderingContext;
-    renderFormat(context: RenderingContext): RenderingFormat;
+    renderFormat(context: RenderingContext): RenderingFormat.HTML | RenderingFormat.PHP;
+    /**
+     * We cannot allow PHP code to run through Mahabhuta.
+     */
+    doMahabhuta(fpath: any): boolean;
 }
-//# sourceMappingURL=render-asciidoc.d.ts.map
+//# sourceMappingURL=render-eta.d.ts.map
